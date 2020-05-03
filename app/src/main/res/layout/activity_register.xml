@@ -20,6 +20,7 @@
             android:id="@+id/login_logo"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:contentDescription="@string/logo_description"
             android:src="@drawable/logo"
             android:transitionName="loader_image" />
 
@@ -28,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/bungee"
-            android:text="Welcome to MoCook"
+            android:text="@string/welcome_register"
             android:textSize="40sp"
             android:transitionName="loader_text" />
 
@@ -36,7 +37,7 @@
             android:id="@+id/sign_in_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign up to start experimenting with Mocook"
+            android:text="@string/explanation_register"
             android:textSize="18sp"
             android:layout_marginBottom="20dp"/>
 
@@ -45,7 +46,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Full Name">
+            android:hint="@string/name_input_placeholder">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -59,7 +60,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username">
+            android:hint="@string/username_input_placeholder">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -73,7 +74,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email">
+            android:hint="@string/email_input_placeholder">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -87,7 +88,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/password_input_placeholder"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -102,7 +103,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Verify password"
+            android:hint="@string/verify_password_input_placeholder"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -118,16 +119,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:background="@drawable/button_background"
-            android:text="LOG IN"
-            android:textColor="@android:color/white"
-            android:onClick="register"/>
+            android:onClick="register"
+            android:text="@string/register_button"
+            android:textColor="@android:color/white" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@android:color/darker_gray"
-            android:text="CANCEL"
+            android:text="@string/cancel_button"
             android:textColor="@android:color/white"
             android:layout_marginBottom="20dp"
             android:onClick="goBack"/>

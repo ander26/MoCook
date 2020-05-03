@@ -9,4 +9,11 @@
     <string name="password_input_placeholder">Password</string>
     <string name="log_in_button">LOG IN</string>
     <string name="sign_up_login">NEW USER? SIGN UP</string>
+    <string name="welcome_register">Welcome to MoCook</string>
+    <string name="explanation_register">Sign up to start experimenting with Mocook</string>
+    <string name="name_input_placeholder">Full Name</string>
+    <string name="email_input_placeholder">Email</string>
+    <string name="verify_password_input_placeholder">Verify password</string>
+    <string name="register_button">REGISTER</string>
+    <string name="cancel_button">CANCEL</string>
 </resources>
