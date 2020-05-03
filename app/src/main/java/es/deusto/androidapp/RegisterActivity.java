@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
         String name = inputName.getEditText().getText().toString();
 
         if (name.trim().isEmpty()) {
-            inputName.setError("Field cannot be empty");
+            inputName.setError(getString(R.string.field_empty));
             return false;
         } else {
             inputName.setError(null);
@@ -53,10 +53,10 @@ public class RegisterActivity extends AppCompatActivity {
         //TODO: Check if the user already exists
 
         if (username.trim().isEmpty()) {
-            inputUsername.setError("Field cannot be empty");
+            inputUsername.setError(getString(R.string.field_empty));
             return false;
         } else if (!username.matches(noWhiteSpace)) {
-            inputUsername.setError("White spaces are not allowed");
+            inputUsername.setError(getString(R.string.white_spaces));
             return false;
         } else{
             inputUsername.setError(null);
@@ -70,10 +70,10 @@ public class RegisterActivity extends AppCompatActivity {
         String pattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         if (email.trim().isEmpty()) {
-            inputEmail.setError("Field cannot be empty");
+            inputEmail.setError(getString(R.string.field_empty));
             return false;
         } else if (!email.matches(pattern)) {
-            inputEmail.setError("Invalid email format");
+            inputEmail.setError(getString(R.string.invalid_email));
             return false;
         } else {
             inputEmail.setError(null);
@@ -87,10 +87,10 @@ public class RegisterActivity extends AppCompatActivity {
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
 
         if (password.trim().isEmpty()) {
-            inputPassword.setError("Field cannot be empty");
+            inputPassword.setError(getString(R.string.field_empty));
             return false;
         } else if (!password.matches(pattern)) {
-            inputPassword.setError("Incorrect password format (Min. 1 capital letter, 1 lower case, 1 number and 8 characters)");
+            inputPassword.setError(getString(R.string.incorrect_password));
             return false;
         }  else {
             inputPassword.setError(null);
@@ -104,10 +104,10 @@ public class RegisterActivity extends AppCompatActivity {
         String originalPassword = inputPassword.getEditText().getText().toString();
 
         if (password.trim().isEmpty()) {
-            inputVerifyPassword.setError("Field cannot be empty");
+            inputVerifyPassword.setError(getString(R.string.field_empty));
             return false;
         } else if (!password.equals(originalPassword)) {
-            inputVerifyPassword.setError("Password do not match");
+            inputVerifyPassword.setError(getString(R.string.password_match));
             return false;
         }  else {
             inputVerifyPassword.setError(null);

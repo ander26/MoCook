@@ -15,7 +15,7 @@
         android:layout_height="75dp"
         android:contentDescription="@string/logo_description"
         android:src="@drawable/logo"
-        android:transitionName="loader_image" />
+        android:transitionName="@string/transition_image" />
 
     <TextView
         android:id="@+id/login_description"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/bungee"
         android:text="@string/welcome_login"
-        android:transitionName="loader_text"
+        android:transitionName="@string/transition_text"
         android:textSize="40sp"
         />
 

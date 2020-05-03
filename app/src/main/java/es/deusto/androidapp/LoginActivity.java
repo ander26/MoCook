@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         String noWhiteSpace = "[^\\s]+";
 
         if (username.trim().isEmpty()) {
-            inputUsername.setError("Field cannot be empty");
+            inputUsername.setError(getString(R.string.field_empty));
             return false;
         } else {
             inputUsername.setError(null);
@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (!username.matches(noWhiteSpace)) {
-            inputUsername.setError("White spaces are not allowed");
+            inputUsername.setError(getString(R.string.white_spaces));
             return false;
         } else {
             inputUsername.setError(null);
@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (password.trim().isEmpty()) {
-            inputPassword.setError("Field cannot be empty");
+            inputPassword.setError(getString(R.string.field_empty));
             return false;
         } else{
             inputPassword.setError(null);

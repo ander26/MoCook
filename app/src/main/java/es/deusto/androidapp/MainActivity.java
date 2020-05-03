@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent (MainActivity.this, LoginActivity.class);
 
                 Pair[] pairs = new Pair[2];
-                pairs[0] = new Pair <View, String> (logo, "loader_image");
-                pairs[1] = new Pair <View, String>(textGroup, "loader_text");
+                pairs[0] = new Pair <View, String> (logo, getString(R.string.transition_image));
+                pairs[1] = new Pair <View, String>(textGroup, getString(R.string.transition_text));
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
                 startActivity(intent, options.toBundle());
