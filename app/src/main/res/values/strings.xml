@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android App</string>
+    <string name="app_name">MoCook</string>
     <string name="logo_description">Logo for the app</string>
     <string name="welcome_text">Welcome to</string>
     <string name="mocook">MoCook</string>
