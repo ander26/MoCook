@@ -4,15 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/loader_background">
 
-    <TextView
+    <!-- Image view that contains the app logo -->
+
+    <ImageView
+        android:id="@+id/logo_loader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:contentDescription="@string/logo_description"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_loader"
+        android:transitionName="loader_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Linear Layout with the welcome text -->
+
+    <LinearLayout
+        android:id="@+id/text_group_loader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:orientation="vertical"
+        android:transitionName="loader_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/welcome_loader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dandeleon"
+            android:text="@string/welcome_text"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="70sp" />
+
+        <TextView
+            android:id="@+id/name_loader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="72dp"
+            android:fontFamily="@font/mysterious"
+            android:text="@string/mocook"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="140sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
