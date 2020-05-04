@@ -1,8 +1,13 @@
 package es.deusto.androidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,6 +21,17 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputLayout inputPassword;
     private TextInputLayout inputVerifyPassword;
 
+    /**
+     * Variables related to the notifications
+     */
+
+    // Notification channel ID.
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    // Notification ID.
+    private static final int NOTIFICATION_ID = 0;
+
+    private NotificationManager mNotifyManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +43,36 @@ public class RegisterActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.password_input);
         inputVerifyPassword = findViewById(R.id.verify_input);
 
+        // Create the notification channel.
+        createNotificationChannel();
+
+    }
+
+    /**
+     * Creates a Notification channel, for OREO and higher.
+     */
+    public void createNotificationChannel() {
+
+        // Create a notification manager object.
+        mNotifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Notification channels are only available in OREO and higher.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+            // Create the NotificationChannel with all the parameters.
+            NotificationChannel notificationChannel = new NotificationChannel
+                    (PRIMARY_CHANNEL_ID,
+                            getString(R.string.notification_channel_name),
+                            NotificationManager.IMPORTANCE_HIGH);
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.BLUE);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setDescription
+                    (getString(R.string.notification_channel_description));
+
+            mNotifyManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     public void goBack(View view) {
@@ -134,6 +180,47 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(intent);
 
         //TODO: Create notification of successful register
+
+
+        // Send a notification to the user if everything is correct
+        sendNotification();
+    }
+
+    public void sendNotification() {
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                NOTIFICATION_ID, intent , PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Build the notification with all of the parameters using helper
+        // method.
+
+        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
+
+        // Deliver the notification.
+        mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build());
+
+    }
+
+    private NotificationCompat.Builder getNotificationBuilder() {
+
+        Intent notificationIntent = new Intent(this, LoginActivity.class);
+        PendingIntent notificationPendingIntent = PendingIntent.getActivity
+                (this, NOTIFICATION_ID, notificationIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Build the notification with all of the parameters.
+        NotificationCompat.Builder notifyBuilder = new NotificationCompat
+                .Builder(this, PRIMARY_CHANNEL_ID)
+                .setContentTitle(getString(R.string.register_notification_title))
+                .setContentText(getString(R.string.register_notification_text))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setAutoCancel(true).setContentIntent(notificationPendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL);
+
+        return notifyBuilder;
+
     }
 
 }
