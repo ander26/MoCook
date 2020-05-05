@@ -27,4 +27,8 @@
     <string name="notification_channel_description">Notifications related to informative aspects like the creation of a recipe or the register of a user</string>
     <string name="register_notification_title">User created correctly!</string>
     <string name="register_notification_text">Registered correctly in the app, access MoCook to start this new adventure</string>
+    <string name="menu_home_label">Home</string>
+    <string name="menu_list_label">My List</string>
+    <string name="menu_user_label">User</string>
+    <string name="search_text">Search for a recipe</string>
 </resources>
