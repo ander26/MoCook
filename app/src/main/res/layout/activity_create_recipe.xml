@@ -64,7 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:src="@android:color/darker_gray"
-                android:scaleType="center"/>
+                android:scaleType="centerCrop"
+                android:onClick="selectImage"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/recipe_name_input"
