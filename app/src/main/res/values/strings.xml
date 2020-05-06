@@ -23,4 +23,27 @@
     <string name="transition_image">loader_image</string>
     <string name="transition_text">loader_text</string>
     <string name="invalid_email">Invalid email format</string>
+    <string name="notification_channel_name">Informative Notifications</string>
+    <string name="notification_channel_description">Notifications related to informative aspects like the creation of a recipe or the register of a user</string>
+    <string name="register_notification_title">User created correctly!</string>
+    <string name="register_notification_text">Registered correctly in the app, access MoCook to start this new adventure</string>
+    <string name="menu_home_label">Home</string>
+    <string name="menu_list_label">My List</string>
+    <string name="menu_user_label">User</string>
+    <string name="search_text">Search for a recipe</string>
+    <string name="back_icon_description">Back icon</string>
+    <string name="create_recipe_title">Create Recipe</string>
+    <string name="recipe_name_input_placeholder">Name recipe</string>
+    <string name="title_dialog_image">Choose source for the image</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_gallery">Choose from Gallery</string>
+    <string name="load_url">Load picture from URL</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="error_dialog_message">There was an error obtaining the image</string>
+    <string name="url_dialog_title">Obtaining image from URL</string>
+    <string name="url_dialog_message">Introduce the URL of the picture you want to add:</string>
+    <string name="url_input_hint">URL</string>
+    <string name="url_dialog_add">Add</string>
+    <string name="error_dialog_url">Error trying to retrieve the image, check the URL is correct</string>
+
 </resources>
