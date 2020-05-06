@@ -116,13 +116,13 @@
                 android:id="@+id/recipe_ingredients_input"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 android:hint="Ingredients"
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="150dp"
                     android:inputType="textMultiLine"
                     android:gravity="start"/>
 
@@ -132,13 +132,13 @@
                 android:id="@+id/recipe_description_input"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:hint="Description"
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="250dp"
                     android:inputType="textMultiLine"
                     android:gravity="start"/>
 

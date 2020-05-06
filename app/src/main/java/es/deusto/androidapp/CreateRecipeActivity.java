@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.InputStream;
 
@@ -37,6 +38,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
+
+    private TextInputLayout inputName;
+    private TextInputLayout inputCountry;
+    private TextInputLayout inputIngredients;
+    private TextInputLayout inputDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         dropdown = findViewById(R.id.dropdown);
         recipeImage = findViewById(R.id.recipe_image);
+        inputName = findViewById(R.id.recipe_name_input);
+        inputCountry = findViewById(R.id.recipe_country_input);
+        inputIngredients = findViewById(R.id.recipe_ingredients_input);
+        inputDescription = findViewById(R.id.recipe_description_input);
 
         dropdown.setAdapter(adapter);
 
@@ -135,10 +145,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     public void goBack(View view) {
         finish();
-    }
-
-    public void createRecipe(View view) {
-        Log.i("RECIPE", "Create recipe");
     }
 
     @Override
@@ -258,6 +264,50 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         builder.show();
 
+    }
+
+    private Boolean validateInput (TextInputLayout input) {
+        String name = input.getEditText().getText().toString();
+
+        if (name.trim().isEmpty()) {
+            input.setError(getString(R.string.field_empty));
+            return false;
+        } else {
+            input.setError(null);
+            input.setErrorEnabled(false);
+        }
+        return true;
+    }
+
+
+
+    public void createRecipe(View view) {
+
+        if (!validateInput(inputName) | !validateInput(inputCountry) | !validateInput(inputIngredients) | !validateInput(inputDescription) ) {
+            return;
+        }
+
+        String name = inputName.getEditText().getText().toString();
+        String country = inputCountry.getEditText().getText().toString();
+        String category = dropdown.getText().toString();
+        String ingredients = inputIngredients.getEditText().getText().toString();
+        String description = inputDescription.getEditText().getText().toString();
+
+        //Visualize data to see that its correct
+
+        Log.i("RECIPE", "Name: " + name);
+        Log.i("RECIPE", "Country: " + country);
+        Log.i("RECIPE", "Category: " + category);
+        Log.i("RECIPE", "Ingredients: " + ingredients);
+        Log.i("RECIPE", "Description: " + description);
+
+
+        //TODO: Store the recipe
+
+        finish();
+
+        // Send a notification to the user if everything is correct
+        //sendNotification();
     }
 
 }
