@@ -179,9 +179,6 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent (this, LoginActivity.class);
         startActivity(intent);
 
-        //TODO: Create notification of successful register
-
-
         // Send a notification to the user if everything is correct
         sendNotification();
     }
