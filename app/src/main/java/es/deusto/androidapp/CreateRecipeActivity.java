@@ -44,6 +44,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private TextInputLayout inputIngredients;
     private TextInputLayout inputDescription;
 
+    private Bitmap bitmapRecipe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,28 +68,26 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         dropdown.setText(COUNTRIES[0], false);
 
-
     }
 
     public void selectImage(View view) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Choose source for the image");
+        builder.setTitle(getString(R.string.title_dialog_image));
 
         if (checkCameraHardware()) {
-            final String [] options = {"Take Photo", "Choose from Gallery", "Load picture from URL", "Cancel"};
+            final String [] options = {getString(R.string.take_photo), getString(R.string.choose_gallery), getString(R.string.load_url), getString(R.string.cancel_button)};
 
             builder.setItems(options, new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
 
-                    if (options[item].equals("Take Photo")) {
+                    if (options[item].equals(getString(R.string.take_photo))) {
 
                         if (ContextCompat.checkSelfPermission(CreateRecipeActivity.this, Manifest.permission.CAMERA)
                                 != PackageManager.PERMISSION_GRANTED) {
-                           Log.i("RECIPE", "PERMISSION NOT GRANTED");
                             ActivityCompat.requestPermissions(CreateRecipeActivity.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     0);
@@ -97,34 +97,34 @@ public class CreateRecipeActivity extends AppCompatActivity {
                         }
 
 
-                    } else if (options[item].equals("Choose from Gallery")) {
+                    } else if (options[item].equals(getString(R.string.choose_gallery))) {
 
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(pickPhoto , 1);
 
-                    } else if (options[item].equals("Cancel")) {
+                    } else if (options[item].equals(getString(R.string.cancel_button))) {
                         dialog.dismiss();
-                    } else if (options[item].equals("Load picture from URL")) {
+                    } else if (options[item].equals(getString(R.string.load_url))) {
                         showTextDialog();
                     }
                 }
             });
         } else {
 
-            final String [] options = {"Choose from Gallery", "Load picture from URL", "Cancel"};
+            final String [] options = {getString(R.string.choose_gallery), getString(R.string.load_url), getString(R.string.cancel_button)};
 
             builder.setItems(options, new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
-                    if (options[item].equals("Choose from Gallery")) {
+                    if (options[item].equals(getString(R.string.choose_gallery))) {
 
                         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(pickPhoto , 1);
 
-                    } else if (options[item].equals("Cancel")) {
+                    } else if (options[item].equals(getString(R.string.cancel_button))) {
                         dialog.dismiss();
-                    } else if (options[item].equals("Load picture from URL")) {
+                    } else if (options[item].equals(getString(R.string.load_url))) {
                         showTextDialog();
                     }
                 }
@@ -156,8 +156,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
             switch (requestCode) {
                 case 0:
                     if (resultCode == RESULT_OK && data != null) {
-                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
-                        recipeImage.setImageBitmap(selectedImage);
+                        bitmapRecipe = (Bitmap) data.getExtras().get("data");
+                        recipeImage.setImageBitmap(bitmapRecipe);
                     }
                     break;
                 case 1:
@@ -166,10 +166,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
                         try {
                              Uri imageUri = data.getData();
                              InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                             Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                            recipeImage.setImageBitmap(selectedImage);
+                             bitmapRecipe= BitmapFactory.decodeStream(imageStream);
+                             recipeImage.setImageBitmap(bitmapRecipe);
                         } catch (Exception e) {
-                            showDialog("Error", "There was an error obtaining the image");
+                            showDialog(getString(R.string.error_dialog_title), getString(R.string.error_dialog_message));
                         }
 
                     }
@@ -210,14 +210,14 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private void showTextDialog () {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Obtaining image from URL");
+        builder.setTitle(getString(R.string.url_dialog_title));
 
-        builder.setMessage("Introduce the URL of the picture you want to add:");
+        builder.setMessage(getString(R.string.url_dialog_message));
 
         final EditText input = new EditText(this);
 
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setHint("URL");
+        input.setHint(getString(R.string.url_input_hint));
 
         FrameLayout container = new FrameLayout(this);
         FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -229,7 +229,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         builder.setView(container);
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.url_dialog_add), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String imageURL = input.getText().toString();
@@ -240,7 +240,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
                         .into(new CustomTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                recipeImage.setImageBitmap(resource);
+                                bitmapRecipe = resource;
+                                recipeImage.setImageBitmap(bitmapRecipe);
                             }
                             @Override
                             public void onLoadCleared( Drawable placeholder) {
@@ -248,14 +249,14 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
                             @Override
                             public void onLoadFailed ( Drawable errorDrawable) {
-                                showDialog("Error", "Error trying to retrieve the image, check the URL is correct");
+                                showDialog(getString(R.string.error_dialog_title), getString(R.string.error_dialog_url));
                             }
                         });
 
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.cancel_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -306,8 +307,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         finish();
 
-        // Send a notification to the user if everything is correct
-        //sendNotification();
     }
+
 
 }

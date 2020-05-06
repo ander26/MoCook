@@ -63,7 +63,7 @@
                 android:id="@+id/recipe_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:src="@android:color/darker_gray"
+                android:src="@drawable/photo_placeholder"
                 android:scaleType="centerCrop"
                 android:onClick="selectImage"/>
 
