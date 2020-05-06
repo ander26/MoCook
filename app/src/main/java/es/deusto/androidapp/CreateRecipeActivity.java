@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
@@ -237,6 +238,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
                 Glide.with(CreateRecipeActivity.this)
                         .asBitmap()
                         .load(imageURL)
+                        .apply(new RequestOptions().override(600, 300))
                         .into(new CustomTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
