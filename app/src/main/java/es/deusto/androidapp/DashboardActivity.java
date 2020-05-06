@@ -2,6 +2,7 @@ package es.deusto.androidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,8 @@ public class DashboardActivity extends AppCompatActivity {
 
 
     public void addRecipe(View view) {
-        Log.i("RECIPE", "Starting creating recipe");
+       Intent intent = new Intent(this, CreateRecipeActivity.class);
+       startActivity(intent);
 
     }
 }

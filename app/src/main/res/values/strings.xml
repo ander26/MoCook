@@ -31,4 +31,7 @@
     <string name="menu_list_label">My List</string>
     <string name="menu_user_label">User</string>
     <string name="search_text">Search for a recipe</string>
+    <string name="back_icon_description">Back icon</string>
+    <string name="create_recipe_title">Create Recipe</string>
+    <string name="recipe_name_input_placeholder">Name recipe</string>
 </resources>

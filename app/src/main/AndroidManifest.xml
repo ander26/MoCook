@@ -9,8 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DashboardActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:name=".CreateRecipeActivity"></activity>
+        <activity
+            android:name=".DashboardActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
