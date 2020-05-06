@@ -9,24 +9,31 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import java.io.InputStream;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
     private static final String[] COUNTRIES = new String[] {"Meat", "Fish", "Desserts", "Salads"};
 
+    private String imageURL= "";
+
     private ImageView recipeImage;
-    private AutoCompleteTextView dropdwon;
+    private AutoCompleteTextView dropdown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +44,16 @@ public class CreateRecipeActivity extends AppCompatActivity {
                 R.layout.dropdown_item,
                 COUNTRIES);
 
-        dropdwon = findViewById(R.id.dropdown);
+        dropdown = findViewById(R.id.dropdown);
         recipeImage = findViewById(R.id.recipe_image);
 
-        dropdwon.setAdapter(adapter);
+        dropdown.setAdapter(adapter);
 
-        dropdwon.setKeyListener(null);
+        dropdown.setKeyListener(null);
 
-        dropdwon.setText(COUNTRIES[0], false);
+        dropdown.setText(COUNTRIES[0], false);
+
+
     }
 
     public void selectImage(View view) {
@@ -82,6 +91,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
+                    } else if (options[item].equals("Load picture from URL")) {
+                        showTextDialog();
                     }
                 }
             });
@@ -100,6 +111,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
                     } else if (options[item].equals("Cancel")) {
                         dialog.dismiss();
+                    } else if (options[item].equals("Load picture from URL")) {
+                        showTextDialog();
                     }
                 }
             });
@@ -111,10 +124,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private boolean checkCameraHardware() {
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)){
-            // this device has a camera
             return true;
         } else {
-            // no camera on this device
             return false;
         }
     }
@@ -143,6 +154,14 @@ public class CreateRecipeActivity extends AppCompatActivity {
                 case 1:
                     if (resultCode == RESULT_OK && data != null) {
 
+                        try {
+                             Uri imageUri = data.getData();
+                             InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                             Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                            recipeImage.setImageBitmap(selectedImage);
+                        } catch (Exception e) {
+                            showDialog("Error", "There was an error obtaining the image");
+                        }
 
                     }
                     break;
@@ -166,6 +185,58 @@ public class CreateRecipeActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void showDialog (String title, String text) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(title);
+
+        builder.setMessage(text);
+
+        builder.show();
+
+    }
+
+    private void showTextDialog () {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Obtaining image from URL");
+
+        builder.setMessage("Introduce the URL of the picture you want to add:");
+
+        final EditText input = new EditText(this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setHint("URL");
+
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = 60;
+        params.rightMargin = 60;
+        input.setLayoutParams(params);
+
+        container.addView(input);
+
+        builder.setView(container);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                imageURL = input.getText().toString();
+                Log.i("RECIPE", imageURL);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
     }
 
 }
