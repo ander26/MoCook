@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,13 +25,15 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+
 import java.io.InputStream;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
     private static final String[] COUNTRIES = new String[] {"Meat", "Fish", "Desserts", "Salads"};
-
-    private String imageURL= "";
 
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
@@ -223,8 +226,26 @@ public class CreateRecipeActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                imageURL = input.getText().toString();
-                Log.i("RECIPE", imageURL);
+                String imageURL = input.getText().toString();
+
+                Glide.with(CreateRecipeActivity.this)
+                        .asBitmap()
+                        .load(imageURL)
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                recipeImage.setImageBitmap(resource);
+                            }
+                            @Override
+                            public void onLoadCleared( Drawable placeholder) {
+                            }
+
+                            @Override
+                            public void onLoadFailed ( Drawable errorDrawable) {
+                                showDialog("Error", "Error trying to retrieve the image, check the URL is correct");
+                            }
+                        });
+
             }
         });
 
