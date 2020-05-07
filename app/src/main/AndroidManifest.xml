@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.deusto.androidapp">
-    <uses-feature android:name="android.hardware.camera"
+
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -14,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CreateRecipeActivity"></activity>
+        <activity android:name=".UserProfileAcitivty"></activity>
+        <activity android:name=".CreateRecipeActivity" />
         <activity
             android:name=".DashboardActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
