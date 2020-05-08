@@ -153,9 +153,9 @@ public class UserAccountFragment extends Fragment {
     public void deleteUser() {
 
         new AlertDialog.Builder(getContext())
-                .setTitle("Deleting User")
-                .setMessage("Are you sure you want to delete the user?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                .setTitle(getString(R.string.deleting_user_title))
+                .setMessage(getString(R.string.deleting_user_text))
+                .setPositiveButton( getString(R.string.yes), new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -165,7 +165,7 @@ public class UserAccountFragment extends Fragment {
                     }
 
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton( getString(R.string.no), null)
                 .show();
     }
 }

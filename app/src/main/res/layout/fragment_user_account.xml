@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background"
-            android:text="Update account"
+            android:text="@string/update_account"
             android:textColor="@android:color/white"
             android:layout_marginTop="30dp" />
 
@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/delete_button"
-            android:text="Delete account"
+            android:text="@string/delete_account"
             android:textColor="@android:color/white"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="30dp"/>

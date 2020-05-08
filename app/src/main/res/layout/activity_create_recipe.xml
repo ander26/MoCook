@@ -63,9 +63,10 @@
                 android:id="@+id/recipe_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:src="@drawable/photo_placeholder"
+                android:contentDescription="@string/adding_recipe_description"
+                android:onClick="selectImage"
                 android:scaleType="centerCrop"
-                android:onClick="selectImage"/>
+                android:src="@drawable/photo_placeholder" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/recipe_name_input"
@@ -87,7 +88,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Country of origin"
+                android:hint="@string/country_origin"
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -102,13 +103,14 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Category"
+                android:hint="@string/category"
                 android:layout_marginTop="5dp">
 
                 <AutoCompleteTextView
                     android:id="@+id/dropdown"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/category" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,7 +119,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ingredients"
+                android:hint="@string/ingredients"
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -133,7 +135,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description"
+                android:hint="@string/description"
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -168,15 +170,12 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_background"
                     android:onClick="createRecipe"
-                    android:text="Create Recipe"
+                    android:text="@string/create_recipe"
                     android:textColor="@android:color/white"
                     android:layout_weight="1"
-                    android:layout_marginLeft="20dp"/>
+                    android:layout_marginStart="20dp"/>
 
             </LinearLayout>
-
-
-
 
         </LinearLayout>
 

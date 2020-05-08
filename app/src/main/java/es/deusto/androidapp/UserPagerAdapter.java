@@ -1,8 +1,5 @@
 package es.deusto.androidapp;
 
-import android.util.Size;
-import android.widget.ScrollView;
-
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
