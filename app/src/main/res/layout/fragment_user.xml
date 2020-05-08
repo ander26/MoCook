@@ -6,8 +6,46 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     tools:context=".UserFragment"
-    android:padding="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+                <Toolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/mysterious"
+                                    android:text="@string/user_profile"
+                                    android:textColor="@color/colorPrimary"
+                                    android:textSize="36sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:orientation="vertical">
 
         <TextView
             android:id="@+id/name_text"
@@ -16,8 +54,7 @@
             android:text="Francisco Jimenez"
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/username_text"
@@ -41,6 +78,8 @@
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -31,6 +31,7 @@ public class DashboardActivity extends AppCompatActivity {
                         fragment = HomeFragment.newInstance();
                         break;
                     case R.id.navigation_liked:
+                        fragment = MyListFragment.newInstance();
                         break;
                     case R.id.navigation_user:
                         fragment = UserFragment.newInstance();
