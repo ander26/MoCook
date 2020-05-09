@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.fragments;
 
 import android.os.Bundle;
 
@@ -8,14 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class CreatedRecipesFragment extends Fragment {
+import es.deusto.androidapp.R;
 
-    public CreatedRecipesFragment() {
+public class MyListFragment extends Fragment {
+
+    public MyListFragment() {
         // Required empty public constructor
     }
 
-    public static CreatedRecipesFragment newInstance() {
-        CreatedRecipesFragment fragment = new CreatedRecipesFragment();
+    public static MyListFragment newInstance() {
+        MyListFragment fragment = new MyListFragment();
+
         return fragment;
     }
 
@@ -23,13 +26,13 @@ public class CreatedRecipesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_created_recipes, container, false);
+        return inflater.inflate(R.layout.fragment_my_list, container, false);
     }
 }

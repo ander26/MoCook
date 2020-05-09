@@ -1,7 +1,10 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.adapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import es.deusto.androidapp.fragments.CreatedRecipesFragment;
+import es.deusto.androidapp.fragments.UserAccountFragment;
 
 public class UserPagerAdapter extends FragmentStateAdapter {
 

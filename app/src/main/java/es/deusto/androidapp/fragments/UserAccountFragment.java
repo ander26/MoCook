@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,9 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
+
+import es.deusto.androidapp.activities.LoginActivity;
+import es.deusto.androidapp.R;
 
 public class UserAccountFragment extends Fragment {
 

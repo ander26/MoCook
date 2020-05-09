@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.fragments;
 
 import android.os.Bundle;
 
@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import es.deusto.androidapp.R;
+import es.deusto.androidapp.adapter.UserPagerAdapter;
 
 public class UserFragment extends Fragment {
 

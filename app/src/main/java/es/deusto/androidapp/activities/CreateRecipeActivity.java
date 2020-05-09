@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +32,8 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.InputStream;
+
+import es.deusto.androidapp.R;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 

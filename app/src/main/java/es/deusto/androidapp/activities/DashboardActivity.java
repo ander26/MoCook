@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,16 +7,26 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import es.deusto.androidapp.R;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.fragments.HomeFragment;
+import es.deusto.androidapp.fragments.MyListFragment;
+import es.deusto.androidapp.fragments.UserFragment;
 
 public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        User user = getIntent().getParcelableExtra("user");
+
         setContentView(R.layout.activity_dashboard);
 
         BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
