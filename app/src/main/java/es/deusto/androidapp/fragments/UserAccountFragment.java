@@ -12,11 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import es.deusto.androidapp.activities.LoginActivity;
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.SQLiteManager;
 
 public class UserAccountFragment extends Fragment {
 
@@ -27,19 +30,28 @@ public class UserAccountFragment extends Fragment {
     private TextInputLayout inputEmail;
     private TextInputLayout inputPassword;
 
+    private User user;
+
+    private SQLiteManager sqlite;
+
     public UserAccountFragment() {
         // Required empty public constructor
     }
 
-    public static UserAccountFragment newInstance() {
+    public static UserAccountFragment newInstance(User user) {
         UserAccountFragment fragment = new UserAccountFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sqlite = new SQLiteManager(getContext());
         if (getArguments() != null) {
+            user = getArguments().getParcelable("user");
         }
     }
 
@@ -54,6 +66,9 @@ public class UserAccountFragment extends Fragment {
         inputName = view.findViewById(R.id.name_input);
         inputEmail = view.findViewById(R.id.email_input);
         inputPassword = view.findViewById(R.id.password_input);
+
+        inputName.getEditText().setText(user.getFullName());
+        inputEmail.getEditText().setText(user.getEmail());
 
         updateButton.setOnClickListener(new View.OnClickListener()
         {
@@ -133,19 +148,21 @@ public class UserAccountFragment extends Fragment {
         String email = inputEmail.getEditText().getText().toString();
         String password = inputPassword.getEditText().getText().toString();
 
-
-        Log.i("RECIPE", "Name: " + name);
-        Log.i("RECIPE", "Email: " + email);
-        Log.i("RECIPE", "Password: " + password);
-
-        //TODO: Update user in the DB
-
         if (!password.trim().isEmpty()) {
-            //Change password and data
-            Log.i("RECIPE", "CHANGE PASSWORD AND PERSONAL INFO");
-        } else {
-            Log.i("RECIPE", "CHANGE ONLY PERSONAL INFO");
+            user.setPassword(password);
+
         }
+
+        user.setFullName(name);
+        user.setEmail(email);
+
+        sqlite.updateUser(user);
+
+        CharSequence text = "User updated";
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(getContext(), text, duration);
+        toast.show();
 
         UserFragment parentFrag = (UserFragment) getActivity().getSupportFragmentManager().getFragments().get(0);
         parentFrag.changeName(name);
@@ -161,7 +178,7 @@ public class UserAccountFragment extends Fragment {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO: Delete the user
+                        sqlite.deleteUser(user);
                         Intent intent = new Intent (getContext(), LoginActivity.class);
                         startActivity(intent);
                     }

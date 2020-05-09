@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,11 +20,13 @@ import es.deusto.androidapp.fragments.UserFragment;
 
 public class DashboardActivity extends AppCompatActivity {
 
+    private User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        User user = getIntent().getParcelableExtra("user");
+        user = getIntent().getParcelableExtra("user");
 
         setContentView(R.layout.activity_dashboard);
 
@@ -43,7 +44,7 @@ public class DashboardActivity extends AppCompatActivity {
                         fragment = MyListFragment.newInstance();
                         break;
                     case R.id.navigation_user:
-                        fragment = UserFragment.newInstance();
+                        fragment = UserFragment.newInstance(user);
                         break;
                 }
                 replaceFragment(fragment);
@@ -69,6 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     public void addRecipe(View view) {
        Intent intent = new Intent(this, CreateRecipeActivity.class);
+       intent.putExtra("user", user);
        startActivity(intent);
     }
 }

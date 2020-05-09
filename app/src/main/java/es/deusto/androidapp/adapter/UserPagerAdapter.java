@@ -3,6 +3,7 @@ package es.deusto.androidapp.adapter;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.fragments.CreatedRecipesFragment;
 import es.deusto.androidapp.fragments.UserAccountFragment;
 
@@ -10,8 +11,11 @@ public class UserPagerAdapter extends FragmentStateAdapter {
 
     private static final int SIZE = 2;
 
-    public UserPagerAdapter(Fragment fragment){
+    private User user;
+
+    public UserPagerAdapter(Fragment fragment, User user){
         super(fragment);
+        this.user = user;
     }
 
     @Override
@@ -20,7 +24,7 @@ public class UserPagerAdapter extends FragmentStateAdapter {
 
         switch (position) {
             case 0:
-                fragment = UserAccountFragment.newInstance();
+                fragment = UserAccountFragment.newInstance(user);
                 break;
             default:
                 fragment = CreatedRecipesFragment.newInstance();

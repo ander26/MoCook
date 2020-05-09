@@ -24,6 +24,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -34,6 +35,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.io.InputStream;
 
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.data.Recipe;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.SQLiteManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
@@ -48,6 +52,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private TextInputLayout inputDescription;
 
     private Bitmap bitmapRecipe;
+
+    private User user;
+    private SQLiteManager sqlite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
         dropdown.setKeyListener(null);
 
         dropdown.setText(COUNTRIES[0], false);
+
+        user = getIntent().getParcelableExtra("user");
+
+        sqlite = new SQLiteManager(this);
 
     }
 
@@ -306,10 +317,18 @@ public class CreateRecipeActivity extends AppCompatActivity {
         Log.i("RECIPE", "Ingredients: " + ingredients);
         Log.i("RECIPE", "Description: " + description);
 
+        Recipe recipe = new Recipe(name, country, category, ingredients, description, user.getUsername(), bitmapRecipe);
+        sqlite.storeRecipe(recipe);
 
-        //TODO: Store the recipe
+        CharSequence text = "Recipe created";
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(this, text, duration);
+        toast.show();
 
         finish();
+
+
 
     }
 

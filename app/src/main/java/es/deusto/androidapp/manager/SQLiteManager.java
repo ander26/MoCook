@@ -103,8 +103,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_INGREDIENTS, recipe.getIngredients());
         values.put(COLUMN_DESCRIPTION, recipe.getDescription());
         values.put(COLUMN_CREATOR, recipe.getCreator());
-        values.put(COLUMN_IMAGE, recipe.pictureAsBytes());
-
+        if (recipe.getPicture() != null) {
+            values.put(COLUMN_IMAGE, recipe.pictureAsBytes());
+        }
         db.insert(TABLE_RECIPES, null, values);
     }
 
@@ -132,7 +133,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public void deleteUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(TABLE_USERS, "username = " + user.getUsername(), null);
+        db.delete(TABLE_USERS, "username = '" + user.getUsername() + "'", null);
     }
 
     public void updateRecipe(Recipe recipe){
@@ -161,7 +162,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_EMAIL, user.getEmail());
         values.put(COLUMN_PASSWORD, user.getPassword());
 
-        db.update(TABLE_USERS, values, "username = " + user.getUsername(), null);
+        db.update(TABLE_USERS, values, "username = '" + user.getUsername() + "'", null);
     }
 
     public ArrayList<User> loginUser(String username, String password){

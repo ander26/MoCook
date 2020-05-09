@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.adapter.UserPagerAdapter;
+import es.deusto.androidapp.data.User;
 
 public class UserFragment extends Fragment {
 
@@ -24,14 +25,19 @@ public class UserFragment extends Fragment {
     private TabLayout tabLayout;
 
     private TextView userName;
+    private TextView usernameText;
+
+    private User user;
 
     public UserFragment() {
         // Required empty public constructor
     }
 
-    public static UserFragment newInstance() {
+    public static UserFragment newInstance(User user) {
         UserFragment fragment = new UserFragment();
-
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -39,14 +45,14 @@ public class UserFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            user = getArguments().getParcelable("user");
         }
 
     }
 
     @Override
     public void onViewCreated(View view,Bundle savedInstanceState) {
-        userPagerAdapter = new UserPagerAdapter(this);
+        userPagerAdapter = new UserPagerAdapter(this, user);
         viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(userPagerAdapter);
 
@@ -75,6 +81,10 @@ public class UserFragment extends Fragment {
 
         tabLayout = view.findViewById(R.id.tabs);
         userName = view.findViewById(R.id.name_text);
+        usernameText = view.findViewById(R.id.username_text);
+
+        userName.setText(user.getFullName());
+        usernameText.setText("@" + user.getUsername());
 
         return view;
     }
