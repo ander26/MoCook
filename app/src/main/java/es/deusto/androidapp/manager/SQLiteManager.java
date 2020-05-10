@@ -153,7 +153,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_INGREDIENTS, recipe.getIngredients());
         values.put(COLUMN_DESCRIPTION, recipe.getDescription());
         values.put(COLUMN_CREATOR, recipe.getCreator());
-        values.put(COLUMN_IMAGE, recipe.pictureAsBytes());
+
+        if (recipe.getPicture()!= null) {
+            values.put(COLUMN_IMAGE, recipe.pictureAsBytes());
+        }
+
 
         db.update(TABLE_RECIPES, values, "_id = " + recipe.getId(), null);
     }

@@ -341,6 +341,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         if (recipe.getPicture() != null) {
             recipeImage.setImageBitmap(recipe.getPicture());
+            bitmapRecipe = recipe.getPicture();
         }
 
         inputName.getEditText().setText(recipe.getName());

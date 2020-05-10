@@ -33,6 +33,13 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView recipeDescription;
 
     @Override
+    public void onResume(){
+        super.onResume();
+        recipe = sqlite.retrieveRecipeID(recipe.getId()).get(0);
+        loadRecipe(recipe);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
@@ -106,5 +113,9 @@ public class RecipeActivity extends AppCompatActivity {
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(mapIntent);
         }
+    }
+
+    public void goBack(View view) {
+        finish();
     }
 }
