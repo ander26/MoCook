@@ -1,4 +1,4 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -13,6 +13,10 @@ import android.view.View;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import es.deusto.androidapp.R;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.SQLiteManager;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private TextInputLayout inputName;
@@ -20,6 +24,8 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputLayout inputEmail;
     private TextInputLayout inputPassword;
     private TextInputLayout inputVerifyPassword;
+
+    private SQLiteManager sqlite;
 
     /**
      * Variables related to the notifications
@@ -42,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.email_input);
         inputPassword = findViewById(R.id.password_input);
         inputVerifyPassword = findViewById(R.id.verify_input);
+
+        sqlite = new SQLiteManager(this);
 
         // Create the notification channel.
         createNotificationChannel();
@@ -174,13 +182,16 @@ public class RegisterActivity extends AppCompatActivity {
         String email = inputEmail.getEditText().getText().toString();
         String password = inputPassword.getEditText().getText().toString();
 
-        //TODO: Store the user
+        if (sqlite.storeUser(new User(username, name, email, password)) == -1) {
+            inputUsername.setError(getString(R.string.username_used));
+        } else {
+            Intent intent = new Intent (this, LoginActivity.class);
+            startActivity(intent);
 
-        Intent intent = new Intent (this, LoginActivity.class);
-        startActivity(intent);
+            // Send a notification to the user if everything is correct
+            sendNotification();
+        }
 
-        // Send a notification to the user if everything is correct
-        sendNotification();
     }
 
     public void sendNotification() {
