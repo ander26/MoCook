@@ -61,4 +61,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="username_used">Username already in used</string>
+    <string name="deleting_recipe_title">Deleting Recipe</string>
+    <string name="deleting_recipe_text">Are you sure you want to delete the recipe?</string>
+    <string name="edit_recipe_title">Edit Recipe</string>
 </resources>

@@ -47,18 +47,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home,
                 container, false);
 
-        Button button = view.findViewById(R.id.test_button);
 
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent(getContext(), RecipeActivity.class);
-                
-                startActivity(intent);
-            }
-        });
         // Inflate the layout for this fragment
         return view;
     }

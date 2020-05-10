@@ -36,16 +36,17 @@
                 />
 
             <TextView
+                android:id="@+id/recipe_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="bottom"
-                android:text="Hamburguesa con alioli recubierta de especias"
-                android:textColor="@android:color/white"
-                android:textSize="25sp"
                 android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:paddingBottom="20dp"
                 android:singleLine="true"
-                android:paddingRight="20dp"/>
+                android:textColor="@android:color/white"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
@@ -134,12 +135,13 @@
                             android:textColor="@color/colorPrimary"
                             android:text="Category"/>
                         <TextView
+                            android:id="@+id/recipe_category"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="16sp"
                             android:layout_marginTop="3dp"
-                            android:text="Meat"/>
+                           />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -152,6 +154,7 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
+                    android:onClick="searchMap"
                    >
 
                     <LinearLayout
@@ -166,12 +169,12 @@
                             android:textColor="@color/colorPrimary"
                             android:text="Country"/>
                         <TextView
+                            android:id="@+id/recipe_country"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="16sp"
-                            android:layout_marginTop="3dp"
-                            android:text="Spain"/>
+                            android:layout_marginTop="3dp" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -199,12 +202,12 @@
 
 
                     <TextView
-                                android:textSize="16sp"
-                                android:textColor="@android:color/darker_gray"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:text="Ingredients 1 , \nIngredients 2,\n Ingredients 3"/>
+                        android:id="@+id/recipe_ingredients"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/darker_gray"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -229,12 +232,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                     <TextView
+                        android:id="@+id/recipe_description"
                         android:textSize="16sp"
                         android:textColor="@android:color/darker_gray"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:text="Description 1 , \nDescription 2,\nDescription 3"/>
+                        android:layout_marginTop="7dp"/>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -245,21 +248,25 @@
                 android:layout_height="wrap_content"
                 android:padding="20dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="60dp">
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/editing_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorAccent"
-                    android:text="Edit"/>
+                    android:text="Edit"
+                    android:onClick="editRecipe"/>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deleting_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginLeft="20dp"
-                    android:text="Delete"/>
+                    android:text="Delete"
+                    android:onClick="deleteRecipe"/>
 
             </LinearLayout>
 

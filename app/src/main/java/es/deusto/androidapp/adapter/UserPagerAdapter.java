@@ -27,7 +27,7 @@ public class UserPagerAdapter extends FragmentStateAdapter {
                 fragment = UserAccountFragment.newInstance(user);
                 break;
             default:
-                fragment = CreatedRecipesFragment.newInstance();
+                fragment = CreatedRecipesFragment.newInstance(user);
                 break;
         }
         return fragment;

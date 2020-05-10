@@ -130,6 +130,12 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.delete(TABLE_RECIPES, "_id = " + recipe.getId(), null);
     }
 
+    public void deleteAllRecipes(){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_RECIPES, null, null);
+    }
+
     public void deleteUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -148,7 +154,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_DESCRIPTION, recipe.getDescription());
         values.put(COLUMN_CREATOR, recipe.getCreator());
         values.put(COLUMN_IMAGE, recipe.pictureAsBytes());
-
 
         db.update(TABLE_RECIPES, values, "_id = " + recipe.getId(), null);
     }
@@ -220,6 +225,38 @@ public class SQLiteManager extends SQLiteOpenHelper {
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
             recipes.add(new Recipe(id, name, country, category, ingredients, description, creator, image));
+
+            cursor.moveToNext();
+        }
+        return recipes;
+    }
+
+    public ArrayList<Recipe> retrieveRecipeID(int id){
+        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_RECIPES,
+                null,
+                "_id = " + id,
+                null,
+                null,
+                null,
+                null);
+
+        cursor.moveToNext();
+        while(!cursor.isAfterLast()){
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+            String country = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COUNTRY));
+            String category = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY));
+            String ingredients = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INGREDIENTS));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION));
+            String creatorDB = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATOR));
+            int idDB = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
+
+            byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
+
+            recipes.add(new Recipe(idDB, name, country, category, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }

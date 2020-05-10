@@ -39,7 +39,10 @@ public class Recipe implements Parcelable {
         this.ingredients = ingredients;
         this.description = description;
         this.creator = creator;
-        BitmapFactory.decodeByteArray(picture, 0, picture.length);
+        if (picture!= null) {
+            this.picture = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+        }
+
     }
 
     public int getId() {

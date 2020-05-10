@@ -69,15 +69,7 @@
                 android:layout_marginTop="25dp"
                 android:background="@drawable/rounded_background">
 
-                <Button
-                    android:id="@+id/test_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Prueba"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
