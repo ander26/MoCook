@@ -2,12 +2,14 @@ package es.deusto.androidapp.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,11 +28,16 @@ public class RecipeActivity extends AppCompatActivity {
     private SQLiteManager sqlite;
 
     private ImageView recipeImage;
+    private ImageView likeIcon;
     private TextView recipeName;
     private TextView recipeCategory;
     private TextView recipeCountry;
     private TextView recipeIngredients;
     private TextView recipeDescription;
+
+    private CardView descriptionCard;
+
+    private boolean liked = false;
 
     @Override
     public void onResume(){
@@ -50,10 +57,11 @@ public class RecipeActivity extends AppCompatActivity {
         int recipeID = getIntent().getIntExtra("recipe", 0);
 
         recipe = sqlite.retrieveRecipeID(recipeID).get(0);
+        descriptionCard = findViewById(R.id.description_card);
 
         if (!user.getUsername().equals(recipe.getCreator())) {
             LinearLayout editingOptions = findViewById(R.id.editing_options);
-            editingOptions.setVisibility(View.GONE);
+            editingOptions.setVisibility(View.INVISIBLE);
         }
 
         recipeImage = findViewById(R.id.recipe_image);
@@ -62,8 +70,12 @@ public class RecipeActivity extends AppCompatActivity {
         recipeCountry = findViewById(R.id.recipe_country);
         recipeIngredients = findViewById(R.id.recipe_ingredients);
         recipeDescription = findViewById(R.id.recipe_description);
+        likeIcon = findViewById(R.id.like_icon);
+
 
         loadRecipe(recipe);
+
+        checkLike();
 
     }
 
@@ -117,5 +129,36 @@ public class RecipeActivity extends AppCompatActivity {
 
     public void goBack(View view) {
         finish();
+    }
+
+    public void shareRecipe(View view) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + " " +  recipe.getName());
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+    }
+
+    private void checkLike() {
+        boolean likedDB = sqlite.checkLike(user.getUsername(), recipe.getId());
+
+        if (likedDB) {
+            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+            liked = true;
+        }
+    }
+
+    public void likeRecipe(View view) {
+        liked = !liked;
+
+        if (liked) {
+            sqlite.storeLike(user.getUsername(), recipe.getId());
+            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+        } else {
+            sqlite.deleteLike(user.getUsername(), recipe.getId());
+            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
+        }
     }
 }

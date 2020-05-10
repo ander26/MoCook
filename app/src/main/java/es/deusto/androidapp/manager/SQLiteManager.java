@@ -63,7 +63,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_LIKES = "create table "
             + TABLE_LIKES + "(" +
-            COLUMN_USERNAME + " text, " +
+            COLUMN_USERNAME + " text not null, " +
             COLUMN_RECIPE + " integer not null, " +
             "PRIMARY KEY (" + COLUMN_RECIPE + ", " + COLUMN_USERNAME + ")," +
             "FOREIGN KEY (" + COLUMN_USERNAME + ") " +
@@ -122,6 +122,25 @@ public class SQLiteManager extends SQLiteOpenHelper {
         long state = db.insert(TABLE_USERS, null, values);
 
         return state;
+    }
+
+    public long storeLike(String username, int recipeID){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_RECIPE, recipeID);
+
+        long state = db.insert(TABLE_LIKES, null, values);
+
+        return state;
+    }
+
+    public void deleteLike(String username, int recipeID){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_LIKES, "recipe = " + recipeID + " and username = '" + username + "'", null);
     }
 
     public void deleteRecipe(Recipe recipe){
@@ -201,6 +220,25 @@ public class SQLiteManager extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         return users;
+    }
+
+    public boolean checkLike(String username, int recipeID){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_LIKES,
+                null,
+                "username = '" + username + "' and recipe = " + recipeID,
+                null,
+                null,
+                null,
+                null);
+
+        cursor.moveToNext();
+        while(!cursor.isAfterLast()){
+           return true;
+        }
+        return false;
     }
 
     public ArrayList<Recipe> retrieveAllRecipes(){
