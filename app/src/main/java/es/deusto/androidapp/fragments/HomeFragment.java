@@ -1,5 +1,6 @@
 package es.deusto.androidapp.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,20 +8,27 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.activities.RecipeActivity;
+import es.deusto.androidapp.data.User;
 
 
 public class HomeFragment extends Fragment {
+
+    private User user;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
 
-    public static HomeFragment newInstance() {
+    public static HomeFragment newInstance(User user) {
         HomeFragment fragment = new HomeFragment();
-
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -28,14 +36,30 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            user = getArguments().getParcelable("user");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_home,
+                container, false);
+
+        Button button = view.findViewById(R.id.test_button);
+
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(getContext(), RecipeActivity.class);
+                
+                startActivity(intent);
+            }
+        });
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        return view;
     }
 }

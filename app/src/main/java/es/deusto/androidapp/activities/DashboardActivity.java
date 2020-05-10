@@ -38,7 +38,7 @@ public class DashboardActivity extends AppCompatActivity {
                 Fragment fragment = null;
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
-                        fragment = HomeFragment.newInstance();
+                        fragment = HomeFragment.newInstance(user);
                         break;
                     case R.id.navigation_liked:
                         fragment = MyListFragment.newInstance();
@@ -57,7 +57,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void setInitialFragment() {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment_placeholder, HomeFragment.newInstance());
+        fragmentTransaction.add(R.id.fragment_placeholder, HomeFragment.newInstance(user));
         fragmentTransaction.commit();
     }
 
