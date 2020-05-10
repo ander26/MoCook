@@ -45,5 +45,24 @@
     <string name="url_input_hint">URL</string>
     <string name="url_dialog_add">Add</string>
     <string name="error_dialog_url">Error trying to retrieve the image, check the URL is correct</string>
-
+    <string name="account_tab_text">Account</string>
+    <string name="recipes_tab_text">Created recipes</string>
+    <string name="user_profile">User Profile</string>
+    <string name="adding_recipe_description">Adding recipe</string>
+    <string name="create_recipe">Create Recipe</string>
+    <string name="description">Description</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="category">Category</string>
+    <string name="country_origin">Country of origin</string>
+    <string name="update_account">Update account</string>
+    <string name="delete_account">Delete account</string>
+    <string name="deleting_user_title">Deleting User</string>
+    <string name="deleting_user_text">Are you sure you want to delete the user?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="username_used">Username already in used</string>
+    <string name="deleting_recipe_title">Deleting Recipe</string>
+    <string name="deleting_recipe_text">Are you sure you want to delete the recipe?</string>
+    <string name="edit_recipe_title">Edit Recipe</string>
+    <string name="share_text">Enter to MoCook to see the recipe: </string>
 </resources>

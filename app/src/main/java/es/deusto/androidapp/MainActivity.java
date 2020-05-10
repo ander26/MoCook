@@ -13,6 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import es.deusto.androidapp.activities.LoginActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     // Time to change to the login screen

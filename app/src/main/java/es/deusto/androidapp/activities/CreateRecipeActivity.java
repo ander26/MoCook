@@ -1,7 +1,8 @@
-package es.deusto.androidapp;
+package es.deusto.androidapp.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -24,6 +25,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -32,6 +35,11 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.InputStream;
+
+import es.deusto.androidapp.R;
+import es.deusto.androidapp.data.Recipe;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.SQLiteManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
@@ -46,6 +54,13 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private TextInputLayout inputDescription;
 
     private Bitmap bitmapRecipe;
+
+    private User user;
+    private Recipe recipe;
+    private SQLiteManager sqlite;
+
+    private TextView activityTitle;
+    private AppCompatButton createButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +77,25 @@ public class CreateRecipeActivity extends AppCompatActivity {
         inputCountry = findViewById(R.id.recipe_country_input);
         inputIngredients = findViewById(R.id.recipe_ingredients_input);
         inputDescription = findViewById(R.id.recipe_description_input);
+        activityTitle = findViewById(R.id.activity_title);
+        createButton = findViewById(R.id.create_button);
 
         dropdown.setAdapter(adapter);
 
         dropdown.setKeyListener(null);
 
         dropdown.setText(COUNTRIES[0], false);
+
+        user = getIntent().getParcelableExtra("user");
+
+        sqlite = new SQLiteManager(this);
+
+        int recipeID = getIntent().getIntExtra("recipe", -1);
+
+        if (recipeID != -1) {
+            recipe = sqlite.retrieveRecipeID(recipeID).get(0);
+            editMode();
+        }
 
     }
 
@@ -296,16 +324,66 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String ingredients = inputIngredients.getEditText().getText().toString();
         String description = inputDescription.getEditText().getText().toString();
 
-        //Visualize data to see that its correct
+        Recipe recipe = new Recipe(name, country, category, ingredients, description, user.getUsername(), bitmapRecipe);
+        sqlite.storeRecipe(recipe);
 
-        Log.i("RECIPE", "Name: " + name);
-        Log.i("RECIPE", "Country: " + country);
-        Log.i("RECIPE", "Category: " + category);
-        Log.i("RECIPE", "Ingredients: " + ingredients);
-        Log.i("RECIPE", "Description: " + description);
+        CharSequence text = "Recipe created";
+        int duration = Toast.LENGTH_SHORT;
 
+        Toast toast = Toast.makeText(this, text, duration);
+        toast.show();
 
-        //TODO: Store the recipe
+        finish();
+
+    }
+
+    private void editMode() {
+
+        if (recipe.getPicture() != null) {
+            recipeImage.setImageBitmap(recipe.getPicture());
+            bitmapRecipe = recipe.getPicture();
+        }
+
+        inputName.getEditText().setText(recipe.getName());
+        inputCountry.getEditText().setText(recipe.getCountry());
+        dropdown.setText(recipe.getCategory(), false);
+        inputIngredients.getEditText().setText(recipe.getIngredients());
+        inputDescription.getEditText().setText(recipe.getDescription());
+
+        activityTitle.setText(getString(R.string.edit_recipe_title));
+
+        createButton.setText(getString(R.string.edit_recipe_title));
+        createButton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                updateRecipe();
+            }
+        });
+
+    }
+
+    private void updateRecipe() {
+
+        if (!validateInput(inputName) | !validateInput(inputCountry) | !validateInput(inputIngredients) | !validateInput(inputDescription) ) {
+            return;
+        }
+
+        recipe.setName(inputName.getEditText().getText().toString());
+        recipe.setCountry(inputCountry.getEditText().getText().toString());
+        recipe.setCategory(dropdown.getText().toString());
+        recipe.setIngredients(inputIngredients.getEditText().getText().toString());
+        recipe.setDescription(inputDescription.getEditText().getText().toString());
+
+        recipe.setPicture(bitmapRecipe);
+
+        sqlite.updateRecipe(recipe);
+
+        CharSequence text = "Recipe updated";
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(this, text, duration);
+        toast.show();
 
         finish();
 
