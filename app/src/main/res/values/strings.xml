@@ -65,4 +65,6 @@
     <string name="deleting_recipe_text">Are you sure you want to delete the recipe?</string>
     <string name="edit_recipe_title">Edit Recipe</string>
     <string name="share_text">Enter to MoCook to see the recipe: </string>
+    <string name="no_recipes_list_liked">You haven\'t added any recipes to your list yet</string>
+    <string name="no_recipes_list_created">You haven\'t created any recipes yet</string>
 </resources>

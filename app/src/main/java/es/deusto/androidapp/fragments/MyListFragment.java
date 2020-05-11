@@ -10,11 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.adapter.RecyclerViewRecipeListAdapter;
+import es.deusto.androidapp.adapter.RecipeLikesListAdapter;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.RecipeLoaderTask;
@@ -25,8 +26,9 @@ public class MyListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private User user;
-    private RecyclerViewRecipeListAdapter mAdapter;
+    private RecipeLikesListAdapter mAdapter;
     private ProgressBar progressBar;
+    private TextView noRecipeText;
 
     public MyListFragment() {
         // Required empty public constructor
@@ -54,7 +56,7 @@ public class MyListFragment extends Fragment {
         recipesLiked.clear();
         mAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
-        new RecipeLoaderTask(getContext(), mAdapter, recipesLiked, user, progressBar).execute();
+        new RecipeLoaderTask(getContext(), mAdapter, recipesLiked, user, progressBar, noRecipeText, recyclerView, 0).execute();
     }
 
     @Override
@@ -65,14 +67,16 @@ public class MyListFragment extends Fragment {
                 container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
+        noRecipeText = view.findViewById(R.id.no_recipe);
 
-        mAdapter = new RecyclerViewRecipeListAdapter(getContext(), user, recipesLiked);
+        mAdapter = new RecipeLikesListAdapter(getContext(), user, recipesLiked, recyclerView, noRecipeText);
 
         recyclerView.setAdapter(mAdapter);
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         progressBar = view.findViewById(R.id.progress_bar);
+        
 
         return view;
     }

@@ -3,7 +3,6 @@ package es.deusto.androidapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,41 +17,27 @@ import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
-import es.deusto.androidapp.manager.SQLiteManager;
 
-public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <RecyclerViewRecipeListAdapter.RecipeViewHolder> {
+public class RecipeCreatedListAdapter extends RecyclerView.Adapter <RecipeCreatedListAdapter.RecipeCreatedViewHolder> {
 
     private final ArrayList<Recipe> recipes;
     private final User user;
     private final Context context;
     private final LayoutInflater mInflater;
-    private SQLiteManager sqlite;
 
-    class RecipeViewHolder extends RecyclerView.ViewHolder
+    private final TextView noRecipeText;
+    private final RecyclerView recyclerView;
+
+    class RecipeCreatedViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
         private ImageView recipeImage;
         private TextView recipeName;
 
-        private ImageView heartIcon;
-
-        public RecipeViewHolder(View itemView, RecyclerViewRecipeListAdapter adapter) {
+        public RecipeCreatedViewHolder(View itemView, RecipeCreatedListAdapter adapter) {
             super(itemView);
             recipeImage = itemView.findViewById(R.id.recipe_image);
             recipeName = itemView.findViewById(R.id.recipe_name);
-            heartIcon = itemView.findViewById(R.id.like_icon);
-
-            heartIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getLayoutPosition();
-                    sqlite.deleteLike(user.getUsername(), recipes.get(position).getId());
-                    recipes.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, recipes.size());
-
-                }
-            });
 
             itemView.setOnClickListener(this);
         }
@@ -71,26 +56,26 @@ public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <Recycle
         }
     }
 
-    public RecyclerViewRecipeListAdapter (Context context, User user,  ArrayList<Recipe> recipes) {
+    public RecipeCreatedListAdapter(Context context, User user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.recipes = recipes;
         this.user = user;
-
-        sqlite = new SQLiteManager(context);
+        this.recyclerView = recyclerView;
+        this.noRecipeText = noRecipeText;
     }
 
     @Override
-    public RecyclerViewRecipeListAdapter.RecipeViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                             int viewType) {
+    public RecipeCreatedViewHolder onCreateViewHolder(ViewGroup parent,
+                                                      int viewType) {
         // Inflate an item view.
         View mItemView = mInflater.inflate(
-                R.layout.item_recipe, parent, false);
-        return new RecipeViewHolder(mItemView, this);
+                R.layout.item_recipe_no_heart, parent, false);
+        return new RecipeCreatedViewHolder(mItemView, this);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewRecipeListAdapter.RecipeViewHolder holder,
+    public void onBindViewHolder(RecipeCreatedViewHolder holder,
                                  int position) {
 
         // Retrieve the data for that position.
@@ -106,6 +91,4 @@ public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <Recycle
     public int getItemCount() {
         return recipes.size();
     }
-
-
 }
