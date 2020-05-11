@@ -13,7 +13,6 @@ import es.deusto.androidapp.data.User;
 
 public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
 
-    private Context context;
     private RecyclerViewRecipeListAdapter adapter;
     private List<Recipe> recipes;
     private SQLiteManager sqlite;
@@ -21,7 +20,6 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
     private ProgressBar progressBar;
 
     public RecipeLoaderTask(Context context, RecyclerViewRecipeListAdapter adapter, List<Recipe> recipes, User user, ProgressBar progressBar) {
-        this.context = context;
         this.adapter = adapter;
         this.recipes = recipes;
         this.user = user;

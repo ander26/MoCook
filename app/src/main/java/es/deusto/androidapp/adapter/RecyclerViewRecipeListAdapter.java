@@ -3,6 +3,7 @@ package es.deusto.androidapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <RecyclerViewRecipeListAdapter.RecipeViewHolder> {
 
@@ -24,6 +26,7 @@ public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <Recycle
     private final User user;
     private final Context context;
     private final LayoutInflater mInflater;
+    private SQLiteManager sqlite;
 
     class RecipeViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
@@ -31,10 +34,26 @@ public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <Recycle
         private ImageView recipeImage;
         private TextView recipeName;
 
+        private ImageView heartIcon;
+
         public RecipeViewHolder(View itemView, RecyclerViewRecipeListAdapter adapter) {
             super(itemView);
             recipeImage = itemView.findViewById(R.id.recipe_image);
             recipeName = itemView.findViewById(R.id.recipe_name);
+            heartIcon = itemView.findViewById(R.id.like_icon);
+
+            heartIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getLayoutPosition();
+                    sqlite.deleteLike(user.getUsername(), recipes.get(position).getId());
+                    recipes.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, recipes.size());
+
+                }
+            });
+
             itemView.setOnClickListener(this);
         }
         @Override
@@ -57,6 +76,8 @@ public class RecyclerViewRecipeListAdapter extends RecyclerView.Adapter <Recycle
         mInflater = LayoutInflater.from(context);
         this.recipes = recipes;
         this.user = user;
+
+        sqlite = new SQLiteManager(context);
     }
 
     @Override
