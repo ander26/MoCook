@@ -3,22 +3,42 @@ package es.deusto.androidapp.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.adapter.RecipeLikesListAdapter;
+import es.deusto.androidapp.data.Recipe;
+import es.deusto.androidapp.data.User;
+import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 public class MyListFragment extends Fragment {
+
+    private final ArrayList<Recipe> recipesLiked = new ArrayList<>();
+
+    private RecyclerView recyclerView;
+    private User user;
+    private RecipeLikesListAdapter mAdapter;
+    private ProgressBar progressBar;
+    private TextView noRecipeText;
 
     public MyListFragment() {
         // Required empty public constructor
     }
 
-    public static MyListFragment newInstance() {
+    public static MyListFragment newInstance(User user) {
         MyListFragment fragment = new MyListFragment();
-
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -26,13 +46,38 @@ public class MyListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            user = getArguments().getParcelable("user");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        recipesLiked.clear();
+        mAdapter.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
+        new RecipeLoaderTask(getContext(), mAdapter, recipesLiked, user, progressBar, noRecipeText, recyclerView, 0).execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_list, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_my_list,
+                container, false);
+
+        recyclerView = view.findViewById(R.id.recycler_view);
+        noRecipeText = view.findViewById(R.id.no_recipe);
+
+        mAdapter = new RecipeLikesListAdapter(getContext(), user, recipesLiked, recyclerView, noRecipeText);
+
+        recyclerView.setAdapter(mAdapter);
+
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        progressBar = view.findViewById(R.id.progress_bar);
+        
+
+        return view;
     }
 }
