@@ -67,4 +67,5 @@
     <string name="share_text">Enter to MoCook to see the recipe: </string>
     <string name="no_recipes_list_liked">You haven\'t added any recipes to your list yet</string>
     <string name="no_recipes_list_created">You haven\'t created any recipes yet</string>
+    <string name="no_recipes_available">No recipes available</string>
 </resources>

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.deusto.androidapp.adapter.RecipeLikesListAdapter;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
 
@@ -25,6 +24,8 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
     private TextView noRecipeText;
     private RecyclerView recyclerView;
     private int option;
+
+    private String searchRecipe = "";
 
     public RecipeLoaderTask(Context context, RecyclerView.Adapter adapter, List<Recipe> recipes, User user, ProgressBar progressBar, TextView noRecipeText, RecyclerView recyclerView, int option) {
         this.adapter = adapter;
@@ -48,6 +49,12 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
             case 1:
                 data = sqlite.retrieveAllRecipesCreator(user.getUsername());
                 break;
+            case 2:
+                data = sqlite.retrieveAllRecipes();
+                break;
+            case 3:
+                data = sqlite.searchRecipe(searchRecipe);
+                break;
         }
 
         return data;
@@ -66,5 +73,9 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
             noRecipeText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setSearchRecipe(String searchRecipe) {
+        this.searchRecipe = searchRecipe;
     }
 }
