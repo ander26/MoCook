@@ -70,7 +70,7 @@ public class RecipeCreatedListAdapter extends RecyclerView.Adapter <RecipeCreate
                                                       int viewType) {
         // Inflate an item view.
         View mItemView = mInflater.inflate(
-                R.layout.item_recipe_no_heart, parent, false);
+                R.layout.item_recipe_row, parent, false);
         return new RecipeCreatedViewHolder(mItemView, this);
     }
 

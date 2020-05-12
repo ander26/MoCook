@@ -18,6 +18,7 @@
             android:id="@+id/recipe_image"
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:contentDescription="@string/recipe_image_description"
             android:scaleType="centerCrop"
             android:src="@drawable/loader_background"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/background_white"
+            android:contentDescription="@string/white_background"
             app:layout_constraintEnd_toEndOf="@+id/recipe_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -40,6 +42,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="40dp"
             android:clickable="true"
+            android:contentDescription="@string/like_recipe"
             android:focusable="true"
             android:src="@drawable/ic_heart_full"
             app:layout_constraintEnd_toEndOf="parent"

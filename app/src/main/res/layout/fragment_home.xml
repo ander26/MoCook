@@ -32,7 +32,7 @@
                     android:fontFamily="@font/mysterious"
                     android:text="@string/mocook"
                     android:textColor="@android:color/white"
-                    android:textSize="50sp"></TextView>
+                    android:textSize="50sp"/>
 
             </LinearLayout>
 
