@@ -241,6 +241,32 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return false;
     }
 
+    public ArrayList<Recipe> searchRecipe(String searchText){
+        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_RECIPES + " WHERE " + COLUMN_NAME + " LIKE '%" + searchText + "%' OR " + COLUMN_INGREDIENTS + " LIKE '%" + searchText + "%' OR " + COLUMN_DESCRIPTION + " LIKE '%" + searchText + "%'";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        cursor.moveToNext();
+        while(!cursor.isAfterLast()){
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+            String country = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COUNTRY));
+            String categoryDB = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY));
+            String ingredients = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_INGREDIENTS));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION));
+            String creatorDB = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATOR));
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
+
+            byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
+
+            recipes.add(new Recipe(id, name, country, categoryDB, ingredients, description, creatorDB, image));
+
+            cursor.moveToNext();
+        }
+        return recipes;
+    }
+
     public ArrayList<Recipe> retrieveAllRecipes(){
         ArrayList<Recipe> recipes = new ArrayList<Recipe>();
         SQLiteDatabase db = this.getReadableDatabase();

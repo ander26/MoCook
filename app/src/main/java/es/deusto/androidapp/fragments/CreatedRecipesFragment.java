@@ -1,24 +1,38 @@
 package es.deusto.androidapp.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.activities.RecipeActivity;
+
+import es.deusto.androidapp.adapter.RecipeCreatedListAdapter;
+import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
-import es.deusto.androidapp.manager.SQLiteManager;
+import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 public class CreatedRecipesFragment extends Fragment {
 
+    private final ArrayList<Recipe> recipesCreated = new ArrayList<>();
+
+    private RecyclerView recyclerView;
     private User user;
-    private SQLiteManager sqlite;
+
+    private RecipeCreatedListAdapter mAdapter;
+
+    private ProgressBar progressBar;
+    private TextView noRecipeText;
 
     public CreatedRecipesFragment() {
         // Required empty public constructor
@@ -35,10 +49,18 @@ public class CreatedRecipesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sqlite = new SQLiteManager(getContext());
         if (getArguments() != null) {
             user = getArguments().getParcelable("user");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        recipesCreated.clear();
+        mAdapter.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
+        new RecipeLoaderTask(getContext(), mAdapter, recipesCreated, user, progressBar, noRecipeText, recyclerView, 1).execute();
     }
 
     @Override
@@ -48,20 +70,17 @@ public class CreatedRecipesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_created_recipes,
                 container, false);
 
-        Button button = view.findViewById(R.id.test_button);
+        recyclerView = view.findViewById(R.id.recycler_view);
+        noRecipeText = view.findViewById(R.id.no_recipe);
 
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent(getContext(), RecipeActivity.class);
-                intent.putExtra("user", user);
-                intent.putExtra("recipe", 5);
-                startActivity(intent);
-            }
-        });
-        // Inflate the layout for this fragment
+        mAdapter = new RecipeCreatedListAdapter(getContext(), user, recipesCreated, recyclerView, noRecipeText);
+
+        recyclerView.setAdapter(mAdapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        progressBar = view.findViewById(R.id.progress_bar);
+
         return view;
     }
 }

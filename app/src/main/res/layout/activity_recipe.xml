@@ -29,11 +29,11 @@
                 android:id="@+id/recipe_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:contentDescription="@string/recipe_image_description"
                 android:fitsSystemWindows="true"
-                app:layout_collapseMode="parallax"
+                android:scaleType="centerCrop"
                 android:src="@drawable/loader_background"
-                />
+                app:layout_collapseMode="parallax" />
 
             <TextView
                 android:id="@+id/recipe_name"
@@ -73,7 +73,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="80dp"
-                        android:contentDescription="Share recipe"
+                        android:contentDescription="@string/share_recipe"
                         android:onClick="shareRecipe"
                         android:src="@drawable/ic_share"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +85,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="20dp"
-                        android:contentDescription="Like of the recipe"
+                        android:contentDescription="@string/like_recipe"
                         android:onClick="likeRecipe"
                         android:src="@drawable/ic_heart_border"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -135,7 +135,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/colorPrimary"
-                            android:text="Category"/>
+                            android:text="@string/category"/>
                         <TextView
                             android:id="@+id/recipe_category"
                             android:layout_width="match_parent"
@@ -153,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:cardCornerRadius="10dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:onClick="searchMap"
@@ -169,7 +169,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/colorPrimary"
-                            android:text="Country"/>
+                            android:text="@string/country"/>
                         <TextView
                             android:id="@+id/recipe_country"
                             android:layout_width="match_parent"
@@ -197,7 +197,7 @@
                     android:orientation="vertical"
                     android:padding="15dp">
                     <TextView
-                        android:text="Ingredients"
+                        android:text="@string/ingredients"
                         android:textColor="@color/colorPrimary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -231,7 +231,7 @@
                     android:padding="15dp">
 
                     <TextView
-                        android:text="Description"
+                        android:text="@string/description"
                         android:textColor="@color/colorPrimary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -260,7 +260,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="@color/colorAccent"
-                    android:text="Edit"
+                    android:text="@string/edit"
                     android:onClick="editRecipe"/>
 
                 <com.google.android.material.button.MaterialButton
@@ -268,8 +268,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginLeft="20dp"
-                    android:text="Delete"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/delete"
                     android:onClick="deleteRecipe"/>
 
             </LinearLayout>
