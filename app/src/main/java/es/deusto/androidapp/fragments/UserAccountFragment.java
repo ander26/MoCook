@@ -1,14 +1,12 @@
 package es.deusto.androidapp.fragments;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-import es.deusto.androidapp.activities.LoginActivity;
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
@@ -179,8 +176,7 @@ public class UserAccountFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         sqlite.deleteUser(user);
-                        Intent intent = new Intent (getContext(), LoginActivity.class);
-                        startActivity(intent);
+                        getActivity().finish();
                     }
 
                 })
