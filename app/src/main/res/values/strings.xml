@@ -75,4 +75,13 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="white_background">White background</string>
+    <string name="meat">Meat</string>
+    <string name="fish">Fish</string>
+    <string name="desserts">Desserts</string>
+    <string name="salads">Salads</string>
+    <string name="soups">Soups</string>
+    <string name="breads">Breads</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="vegetables">Vegetables</string>
+    <string name="beverages">Beverages</string>
 </resources>

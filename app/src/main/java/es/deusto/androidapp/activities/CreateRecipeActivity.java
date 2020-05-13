@@ -43,8 +43,6 @@ import es.deusto.androidapp.manager.SQLiteManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
-    private static final String[] COUNTRIES = new String[] {"Meat", "Fish", "Desserts", "Salads"};
-
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
 
@@ -66,6 +64,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_recipe);
+
+        String[] COUNTRIES = new String[] {getString(R.string.meat),
+                getString(R.string.fish), getString(R.string.desserts), getString(R.string.salads),
+                getString(R.string.soups), getString(R.string.breads), getString(R.string.breakfast),
+                getString(R.string.vegetables), getString(R.string.beverages)};
 
         ArrayAdapter <String> adapter = new ArrayAdapter <String> (this,
                 R.layout.dropdown_item,
