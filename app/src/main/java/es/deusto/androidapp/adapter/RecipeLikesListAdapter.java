@@ -112,7 +112,11 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
 
         // Add the data to the view holder.
         holder.recipeName.setText(name);
-        holder.recipeImage.setImageBitmap(image);
+        if (image == null) {
+            holder.recipeImage.setImageDrawable(context.getDrawable(R.drawable.loader_background));
+        } else {
+            holder.recipeImage.setImageBitmap(image);
+        }
     }
 
     @Override
