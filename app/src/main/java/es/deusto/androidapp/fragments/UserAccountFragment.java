@@ -20,9 +20,6 @@ import es.deusto.androidapp.manager.SQLiteManager;
 
 public class UserAccountFragment extends Fragment {
 
-    private AppCompatButton updateButton;
-    private AppCompatButton deleteButton;
-
     private TextInputLayout inputName;
     private TextInputLayout inputEmail;
     private TextInputLayout inputPassword;
@@ -59,7 +56,7 @@ public class UserAccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_account,
                 container, false);
 
-        updateButton = view.findViewById(R.id.update_button);
+        AppCompatButton updateButton = view.findViewById(R.id.update_button);
         inputName = view.findViewById(R.id.name_input);
         inputEmail = view.findViewById(R.id.email_input);
         inputPassword = view.findViewById(R.id.password_input);
@@ -76,7 +73,7 @@ public class UserAccountFragment extends Fragment {
             }
         });
 
-        deleteButton = view.findViewById(R.id.delete_button);
+        AppCompatButton deleteButton = view.findViewById(R.id.delete_button);
 
         deleteButton.setOnClickListener(new View.OnClickListener()
         {
@@ -135,7 +132,7 @@ public class UserAccountFragment extends Fragment {
         return true;
     }
 
-    public void updateUser() {
+    private void updateUser() {
 
         if (!validateName() | !validateEmail() | !validatePassword()) {
             return;
@@ -166,7 +163,7 @@ public class UserAccountFragment extends Fragment {
 
     }
 
-    public void deleteUser() {
+    private void deleteUser() {
 
         new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.deleting_user_title))

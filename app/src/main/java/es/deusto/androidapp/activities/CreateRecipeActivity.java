@@ -69,7 +69,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
                 getString(R.string.soups), getString(R.string.breads), getString(R.string.breakfast),
                 getString(R.string.vegetables), getString(R.string.beverages)};
 
-        ArrayAdapter <String> adapter = new ArrayAdapter <String> (this,
+        ArrayAdapter <String> adapter = new ArrayAdapter <> (this,
                 R.layout.dropdown_item,
                 COUNTRIES);
 
@@ -212,19 +212,14 @@ public class CreateRecipeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-
+        if (requestCode == 0) {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(takePicture, 0);
                 }
-
-                return;
             }
 
-        }
     }
 
     private void showDialog (String title, String text) {

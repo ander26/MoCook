@@ -20,12 +20,9 @@ import es.deusto.androidapp.data.User;
 
 public class UserFragment extends Fragment {
 
-    private ViewPager2 viewPager;
-    private UserPagerAdapter userPagerAdapter;
     private TabLayout tabLayout;
 
     private TextView userName;
-    private TextView usernameText;
 
     private User user;
 
@@ -52,8 +49,8 @@ public class UserFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view,Bundle savedInstanceState) {
-        userPagerAdapter = new UserPagerAdapter(this, user);
-        viewPager = view.findViewById(R.id.view_pager);
+        UserPagerAdapter userPagerAdapter = new UserPagerAdapter(this, user);
+        ViewPager2 viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(userPagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
@@ -81,7 +78,7 @@ public class UserFragment extends Fragment {
 
         tabLayout = view.findViewById(R.id.tabs);
         userName = view.findViewById(R.id.name_text);
-        usernameText = view.findViewById(R.id.username_text);
+        TextView usernameText = view.findViewById(R.id.username_text);
 
         userName.setText(user.getFullName());
         usernameText.setText("@" + user.getUsername());

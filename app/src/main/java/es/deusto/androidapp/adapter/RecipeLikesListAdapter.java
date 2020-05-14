@@ -36,15 +36,12 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
         private ImageView recipeImage;
         private TextView recipeName;
 
-        private ImageView heartIcon;
-
-
 
         public RecipeLikesViewHolder(View itemView, RecipeLikesListAdapter adapter) {
             super(itemView);
             recipeImage = itemView.findViewById(R.id.recipe_image);
             recipeName = itemView.findViewById(R.id.recipe_name);
-            heartIcon = itemView.findViewById(R.id.like_icon);
+            ImageView heartIcon = itemView.findViewById(R.id.like_icon);
 
             heartIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
