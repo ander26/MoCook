@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private SQLiteManager sqlite;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.password_input);
 
         sqlite = new SQLiteManager(this);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     }
 

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.User;
@@ -21,6 +22,8 @@ import es.deusto.androidapp.fragments.UserFragment;
 public class DashboardActivity extends AppCompatActivity {
 
     private User user;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,8 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         setInitialFragment();
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     private void setInitialFragment() {

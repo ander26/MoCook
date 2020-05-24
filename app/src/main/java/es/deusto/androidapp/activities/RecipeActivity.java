@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
@@ -34,6 +36,8 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView recipeDescription;
 
     private boolean liked = false;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     public void onResume(){
@@ -71,6 +75,8 @@ public class RecipeActivity extends AppCompatActivity {
         loadRecipe(recipe);
 
         checkLike();
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     }
 

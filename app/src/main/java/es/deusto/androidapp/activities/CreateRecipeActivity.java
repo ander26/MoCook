@@ -32,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.InputStream;
 
@@ -58,6 +59,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private TextView activityTitle;
     private AppCompatButton createButton;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
             editMode();
         }
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     public void selectImage(View view) {
