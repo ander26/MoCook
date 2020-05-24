@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,8 +42,6 @@ import es.deusto.androidapp.manager.SQLiteManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
-    private static final String[] COUNTRIES = new String[] {"Meat", "Fish", "Desserts", "Salads"};
-
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
 
@@ -67,7 +64,12 @@ public class CreateRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_recipe);
 
-        ArrayAdapter <String> adapter = new ArrayAdapter <String> (this,
+        String[] COUNTRIES = new String[] {getString(R.string.meat),
+                getString(R.string.fish), getString(R.string.desserts), getString(R.string.salads),
+                getString(R.string.soups), getString(R.string.breads), getString(R.string.breakfast),
+                getString(R.string.vegetables), getString(R.string.beverages)};
+
+        ArrayAdapter <String> adapter = new ArrayAdapter <> (this,
                 R.layout.dropdown_item,
                 COUNTRIES);
 
@@ -210,19 +212,14 @@ public class CreateRecipeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-
+        if (requestCode == 0) {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(takePicture, 0);
                 }
-
-                return;
             }
 
-        }
     }
 
     private void showDialog (String title, String text) {

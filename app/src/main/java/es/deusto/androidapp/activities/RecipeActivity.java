@@ -2,7 +2,6 @@ package es.deusto.androidapp.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,8 +33,6 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView recipeIngredients;
     private TextView recipeDescription;
 
-    private CardView descriptionCard;
-
     private boolean liked = false;
 
     @Override
@@ -56,7 +53,6 @@ public class RecipeActivity extends AppCompatActivity {
         int recipeID = getIntent().getIntExtra("recipe", 0);
 
         recipe = sqlite.retrieveRecipeID(recipeID).get(0);
-        descriptionCard = findViewById(R.id.description_card);
 
         if (!user.getUsername().equals(recipe.getCreator())) {
             LinearLayout editingOptions = findViewById(R.id.editing_options);

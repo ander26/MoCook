@@ -119,9 +119,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_EMAIL, user.getEmail());
         values.put(COLUMN_PASSWORD, user.getPassword());
 
-        long state = db.insert(TABLE_USERS, null, values);
-
-        return state;
+        return db.insert(TABLE_USERS, null, values);
     }
 
     public long storeLike(String username, int recipeID){
@@ -132,9 +130,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(COLUMN_USERNAME, username);
         values.put(COLUMN_RECIPE, recipeID);
 
-        long state = db.insert(TABLE_LIKES, null, values);
-
-        return state;
+        return db.insert(TABLE_LIKES, null, values);
     }
 
     public void deleteLike(String username, int recipeID){
@@ -194,7 +190,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<User> loginUser(String username, String password){
-        ArrayList<User> users = new ArrayList<User>();
+        ArrayList<User> users = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         String [] args = {username, password};
@@ -242,7 +238,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> searchRecipe(String searchText){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_RECIPES + " WHERE " + COLUMN_NAME + " LIKE '%" + searchText + "%' OR " + COLUMN_INGREDIENTS + " LIKE '%" + searchText + "%' OR " + COLUMN_DESCRIPTION + " LIKE '%" + searchText + "%'";
 
@@ -268,7 +264,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> retrieveAllRecipes(){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
@@ -300,7 +296,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> retrieveRecipeID(int id){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
@@ -332,7 +328,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> retrieveAllRecipesCreator(String creator){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String [] args = {creator};
         Cursor cursor = db.query(
@@ -364,7 +360,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> retrieveAllRecipesCategory(String category){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String [] args = {category};
         Cursor cursor = db.query(
@@ -396,7 +392,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ArrayList<Recipe> retrieveAllRecipesLikesUser(String username){
-        ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+        ArrayList<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_LIKES + " L, " + TABLE_RECIPES + " R WHERE L.RECIPE = R._ID AND L.USERNAME = ? ";
         String [] args = {username};

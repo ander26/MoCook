@@ -21,11 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
     private  static final int TIME_CHANGE = 3000;
 
-    // Variables related to the animation
-
-    private Animation logoAnimation;
-    private Animation textAnimation;
-
     private ImageView logo;
 
     private LinearLayout textGroup;
@@ -36,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        logoAnimation = AnimationUtils.loadAnimation(this, R.anim.logo_loader_animation);
-        textAnimation = AnimationUtils.loadAnimation(this, R.anim.text_loader_animation);
+        Animation logoAnimation = AnimationUtils.loadAnimation(this, R.anim.logo_loader_animation);
+        Animation textAnimation = AnimationUtils.loadAnimation(this, R.anim.text_loader_animation);
 
         logo = findViewById(R.id.logo_loader);
         textGroup = findViewById(R.id.text_group_loader);
@@ -52,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 Intent intent = new Intent (MainActivity.this, LoginActivity.class);
 
-                Pair[] pairs = new Pair[2];
+                Pair [] pairs = new Pair[2];
                 pairs[0] = new Pair <View, String> (logo, getString(R.string.transition_image));
                 pairs[1] = new Pair <View, String>(textGroup, getString(R.string.transition_text));
 

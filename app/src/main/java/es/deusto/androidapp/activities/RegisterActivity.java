@@ -196,10 +196,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void sendNotification() {
 
-        Intent intent = new Intent(this, LoginActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                NOTIFICATION_ID, intent , PendingIntent.FLAG_UPDATE_CURRENT);
-
         // Build the notification with all of the parameters using helper
         // method.
 

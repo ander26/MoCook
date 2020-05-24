@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment {
         recipes.clear();
         mAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
-        int option = 0;
+        int option;
         if (searchText.trim().isEmpty()) {
             option = 2;
         } else {
