@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.User;
@@ -27,6 +28,8 @@ public class UserAccountFragment extends Fragment {
     private User user;
 
     private SQLiteManager sqlite;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public UserAccountFragment() {
         // Required empty public constructor
@@ -63,6 +66,8 @@ public class UserAccountFragment extends Fragment {
 
         inputName.getEditText().setText(user.getFullName());
         inputEmail.getEditText().setText(user.getEmail());
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
         updateButton.setOnClickListener(new View.OnClickListener()
         {
@@ -152,6 +157,8 @@ public class UserAccountFragment extends Fragment {
 
         sqlite.updateUser(user);
 
+        mFirebaseAnalytics.logEvent("update_account", null);
+
         CharSequence text = "User updated";
         int duration = Toast.LENGTH_SHORT;
 
@@ -172,6 +179,7 @@ public class UserAccountFragment extends Fragment {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        mFirebaseAnalytics.logEvent("delete_account", null);
                         sqlite.deleteUser(user);
                         getActivity().finish();
                     }

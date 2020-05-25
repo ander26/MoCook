@@ -95,6 +95,7 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void editRecipe (View view) {
+
         Intent intent = new Intent(this, CreateRecipeActivity.class);
         intent.putExtra("user", user);
         intent.putExtra("recipe", recipe.getId());
@@ -109,6 +110,12 @@ public class RecipeActivity extends AppCompatActivity {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+                        Bundle params = new Bundle();
+                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+                        params.putString("recipe_name", recipe.getName());
+                        mFirebaseAnalytics.logEvent("delete_recipe", params);
+
                         sqlite.deleteRecipe(recipe);
                         finish();
                     }
@@ -119,6 +126,11 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void searchMap(View view) {
+
+        Bundle params = new Bundle();
+        params.putString("search_country", recipe.getCountry());
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        mFirebaseAnalytics.logEvent("consult_map", params);
 
         Uri location = Uri.parse("geo:0,0?q=" + recipe.getCountry().replace(" ", "+"));
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
@@ -133,6 +145,12 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void shareRecipe(View view) {
+
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "recipe");
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, params);
+
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + " " +  recipe.getName());
@@ -153,13 +171,18 @@ public class RecipeActivity extends AppCompatActivity {
 
     public void likeRecipe(View view) {
         liked = !liked;
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        params.putString("recipe_category", recipe.getCategory());
 
         if (liked) {
             sqlite.storeLike(user.getUsername(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+            mFirebaseAnalytics.logEvent("like_recipe", params);
         } else {
             sqlite.deleteLike(user.getUsername(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
+            mFirebaseAnalytics.logEvent("dislike_recipe", params);
         }
     }
 }

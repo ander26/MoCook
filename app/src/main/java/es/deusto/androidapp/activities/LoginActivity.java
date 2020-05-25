@@ -93,6 +93,9 @@ public class LoginActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, text, duration);
             toast.show();
         }  else {
+            Bundle params = new Bundle();
+            params.putString(FirebaseAnalytics.Param.METHOD, "email");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, params);
             Intent intent = new Intent(this, DashboardActivity.class);
             intent.putExtra("user", users.get(0));
             startActivity(intent);

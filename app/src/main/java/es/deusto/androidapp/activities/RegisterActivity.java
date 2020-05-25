@@ -190,6 +190,9 @@ public class RegisterActivity extends AppCompatActivity {
         if (sqlite.storeUser(new User(username, name, email, password)) == -1) {
             inputUsername.setError(getString(R.string.username_used));
         } else {
+
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, null);
+
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
 
