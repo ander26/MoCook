@@ -33,12 +33,13 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.InputStream;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
@@ -54,7 +55,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private Bitmap bitmapRecipe;
 
-    private User user;
     private Recipe recipe;
     private SQLiteManager sqlite;
 
@@ -64,6 +64,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private UserPropertyManager mUserPropertyManager;
+
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +97,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         dropdown.setText(COUNTRIES[0], false);
 
-        user = getIntent().getParcelableExtra("user");
-
         sqlite = new SQLiteManager(this);
 
         int recipeID = getIntent().getIntExtra("recipe", -1);
@@ -107,6 +108,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mUserPropertyManager = UserPropertyManager.getInstance();
+        initFirebaseAuth ();
     }
 
     public void selectImage(View view) {
@@ -332,7 +334,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String ingredients = inputIngredients.getEditText().getText().toString();
         String description = inputDescription.getEditText().getText().toString();
 
-        Recipe recipe = new Recipe(name, country, category, ingredients, description, user.getUsername(), bitmapRecipe);
+        Recipe recipe = new Recipe(name, country, category, ingredients, description, mFirebaseUser.getUid(), bitmapRecipe);
         Bundle params = new Bundle();
         params.putString("recipe_name", recipe.getName());
         params.putString("recipe_category", recipe.getCategory());
@@ -414,4 +416,13 @@ public class CreateRecipeActivity extends AppCompatActivity {
     }
 
 
+    private void initFirebaseAuth() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if (mFirebaseUser == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 }

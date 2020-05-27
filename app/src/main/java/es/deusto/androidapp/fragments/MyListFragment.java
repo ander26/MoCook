@@ -12,12 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.adapter.RecipeLikesListAdapter;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 public class MyListFragment extends Fragment {
@@ -25,7 +26,7 @@ public class MyListFragment extends Fragment {
     private final ArrayList<Recipe> recipesLiked = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private User user;
+    private FirebaseUser user;
     private RecipeLikesListAdapter mAdapter;
     private ProgressBar progressBar;
     private TextView noRecipeText;
@@ -34,7 +35,7 @@ public class MyListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static MyListFragment newInstance(User user) {
+    public static MyListFragment newInstance(FirebaseUser user) {
         MyListFragment fragment = new MyListFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", user);

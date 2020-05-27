@@ -12,6 +12,40 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/google_account"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:textColor="@android:color/darker_gray"
+                android:text="@string/google_account_text_title" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:text="@string/google_account_text"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/user_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/name_input"
             android:layout_width="match_parent"
@@ -80,5 +114,5 @@
             android:layout_marginBottom="30dp"/>
 
     </LinearLayout>
-
+    </LinearLayout>
 </ScrollView>

@@ -3,7 +3,8 @@ package es.deusto.androidapp.adapter;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import es.deusto.androidapp.data.User;
+import com.google.firebase.auth.FirebaseUser;
+
 import es.deusto.androidapp.fragments.CreatedRecipesFragment;
 import es.deusto.androidapp.fragments.UserAccountFragment;
 
@@ -11,9 +12,9 @@ public class UserPagerAdapter extends FragmentStateAdapter {
 
     private static final int SIZE = 2;
 
-    private User user;
+    private FirebaseUser user;
 
-    public UserPagerAdapter(Fragment fragment, User user){
+    public UserPagerAdapter(Fragment fragment, FirebaseUser user){
         super(fragment);
         this.user = user;
     }

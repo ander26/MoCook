@@ -11,18 +11,19 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesListAdapter.RecipeLikesViewHolder> {
 
     private final ArrayList<Recipe> recipes;
-    private final User user;
+    private final FirebaseUser user;
     private final Context context;
     private final LayoutInflater mInflater;
     private SQLiteManager sqlite;
@@ -47,7 +48,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
                 @Override
                 public void onClick(View v) {
                     int position = getLayoutPosition();
-                    sqlite.deleteLike(user.getUsername(), recipes.get(position).getId());
+                    sqlite.deleteLike(user.getUid(), recipes.get(position).getId());
                     recipes.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, recipes.size());
@@ -80,7 +81,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
         }
     }
 
-    public RecipeLikesListAdapter(Context context, User user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
+    public RecipeLikesListAdapter(Context context, FirebaseUser user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.recipes = recipes;

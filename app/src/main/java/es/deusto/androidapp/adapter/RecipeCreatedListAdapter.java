@@ -16,12 +16,10 @@ import java.util.ArrayList;
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 
 public class RecipeCreatedListAdapter extends RecyclerView.Adapter <RecipeCreatedListAdapter.RecipeCreatedViewHolder> {
 
     private final ArrayList<Recipe> recipes;
-    private final User user;
     private final Context context;
     private final LayoutInflater mInflater;
 
@@ -49,18 +47,16 @@ public class RecipeCreatedListAdapter extends RecyclerView.Adapter <RecipeCreate
             int recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
-            intent.putExtra("user", user);
             intent.putExtra("recipe", recipeID);
             context.startActivity(intent);
 
         }
     }
 
-    public RecipeCreatedListAdapter(Context context, User user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
+    public RecipeCreatedListAdapter(Context context, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.recipes = recipes;
-        this.user = user;
         this.recyclerView = recyclerView;
         this.noRecipeText = noRecipeText;
     }
