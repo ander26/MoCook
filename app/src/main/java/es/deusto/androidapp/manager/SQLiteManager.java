@@ -10,7 +10,6 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 
 public class SQLiteManager extends SQLiteOpenHelper {
 
@@ -19,11 +18,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Table and columns names
-    private static final String TABLE_USERS = "users";
-    private static final String COLUMN_USERNAME = "username";
-    private static final String COLUMN_FULLNAME = "fullname";
-    private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_PASSWORD = "password";
 
     private static final String TABLE_RECIPES = "recipes";
     private static final String COLUMN_ID = "_id";
@@ -48,26 +42,15 @@ public class SQLiteManager extends SQLiteOpenHelper {
             COLUMN_INGREDIENTS + " text not null, " +
             COLUMN_DESCRIPTION + " text not null, " +
             COLUMN_CREATOR + " text not null, " +
-            COLUMN_IMAGE + " blob , " +
-            "FOREIGN KEY (" + COLUMN_CREATOR + ") " +
-            "       REFERENCES " + TABLE_USERS + " (" + COLUMN_USERNAME + ") " +
+            COLUMN_IMAGE + " blob  " +
             ");";
 
-    private static final String CREATE_TABLE_USERS = "create table "
-            + TABLE_USERS + "(" +
-            COLUMN_USERNAME + " text primary key, " +
-            COLUMN_FULLNAME + " text not null, " +
-            COLUMN_EMAIL + " text not null, " +
-            COLUMN_PASSWORD + " text not null " +
-            ");";
 
     private static final String CREATE_TABLE_LIKES = "create table "
             + TABLE_LIKES + "(" +
-            COLUMN_USERNAME + " text not null, " +
+            "username" + " text not null, " +
             COLUMN_RECIPE + " integer not null, " +
-            "PRIMARY KEY (" + COLUMN_RECIPE + ", " + COLUMN_USERNAME + ")," +
-            "FOREIGN KEY (" + COLUMN_USERNAME + ") " +
-            "       REFERENCES " + TABLE_USERS + " (" + COLUMN_USERNAME + "), " +
+            "PRIMARY KEY (" + COLUMN_RECIPE + ", " + "username" + ")," +
             "FOREIGN KEY (" + COLUMN_RECIPE + ") " +
             "       REFERENCES " + TABLE_RECIPES + " (" + COLUMN_ID + ") " +
             ");";
@@ -79,7 +62,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_RECIPES);
-        db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_LIKES);
     }
 
@@ -87,7 +69,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("MoCookDatabase", "Upgrading database from version " + oldVersion + " to " + newVersion + ", deleting old data, creating empty table.");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LIKES);
         onCreate(db);
     }
@@ -109,25 +90,13 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.insert(TABLE_RECIPES, null, values);
     }
 
-    public long storeUser(User user){
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_USERNAME, user.getUsername());
-        values.put(COLUMN_FULLNAME, user.getFullName());
-        values.put(COLUMN_EMAIL, user.getEmail());
-        values.put(COLUMN_PASSWORD, user.getPassword());
-
-        return db.insert(TABLE_USERS, null, values);
-    }
 
     public long storeLike(String username, int recipeID){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
 
-        values.put(COLUMN_USERNAME, username);
+        values.put("username", username);
         values.put(COLUMN_RECIPE, recipeID);
 
         return db.insert(TABLE_LIKES, null, values);
@@ -151,11 +120,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.delete(TABLE_RECIPES, null, null);
     }
 
-    public void deleteUser(User user){
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.delete(TABLE_USERS, "username = '" + user.getUsername() + "'", null);
-    }
 
     public void updateRecipe(Recipe recipe){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -177,46 +141,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.update(TABLE_RECIPES, values, "_id = " + recipe.getId(), null);
     }
 
-    public void updateUser(User user){
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_FULLNAME, user.getFullName());
-        values.put(COLUMN_EMAIL, user.getEmail());
-        values.put(COLUMN_PASSWORD, user.getPassword());
-
-        db.update(TABLE_USERS, values, "username = '" + user.getUsername() + "'", null);
-    }
-
-    public ArrayList<User> loginUser(String username, String password){
-        ArrayList<User> users = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String [] args = {username, password};
-
-        Cursor cursor = db.query(
-                TABLE_USERS,
-                null,
-                "username = ? and password = ?",
-                args,
-                null,
-                null,
-                null);
-
-        cursor.moveToNext();
-        while(!cursor.isAfterLast()){
-            String usernameDB = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
-            String fullName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FULLNAME));
-            String email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL));
-            String passwordDB = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
-
-            users.add(new User(usernameDB, fullName, email, passwordDB));
-
-            cursor.moveToNext();
-        }
-        return users;
-    }
 
     public boolean checkLike(String username, int recipeID){
         SQLiteDatabase db = this.getReadableDatabase();

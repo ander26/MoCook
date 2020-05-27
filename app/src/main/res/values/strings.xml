@@ -60,7 +60,8 @@
     <string name="deleting_user_text">Are you sure you want to delete the user?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="username_used">Username already in used</string>
+    <string name="username_used">Username already in use</string>
+    <string name="email_used">Email already in use</string>
     <string name="deleting_recipe_title">Deleting Recipe</string>
     <string name="deleting_recipe_text">Are you sure you want to delete the recipe?</string>
     <string name="edit_recipe_title">Edit Recipe</string>
@@ -84,4 +85,8 @@
     <string name="breakfast">Breakfast</string>
     <string name="vegetables">Vegetables</string>
     <string name="beverages">Beverages</string>
+    <string name="or">- OR -</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="google_account_text_title">Account managed by Google</string>
+    <string name="google_account_text">For editing the profile, access to your Google Account.</string>
 </resources>

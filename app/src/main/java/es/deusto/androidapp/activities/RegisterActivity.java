@@ -1,5 +1,6 @@
 package es.deusto.androidapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
@@ -10,23 +11,29 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private TextInputLayout inputName;
-    private TextInputLayout inputUsername;
     private TextInputLayout inputEmail;
     private TextInputLayout inputPassword;
     private TextInputLayout inputVerifyPassword;
 
     private SQLiteManager sqlite;
+
+    private FirebaseAuth mAuth;
 
     /**
      * Variables related to the notifications
@@ -47,7 +54,6 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         inputName = findViewById(R.id.name_input);
-        inputUsername = findViewById(R.id.username_input);
         inputEmail = findViewById(R.id.email_input);
         inputPassword = findViewById(R.id.password_input);
         inputVerifyPassword = findViewById(R.id.verify_input);
@@ -58,6 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
         createNotificationChannel();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        mAuth = FirebaseAuth.getInstance();
 
     }
 
@@ -105,24 +113,6 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    private Boolean validateUsername () {
-        String username = inputUsername.getEditText().getText().toString();
-        String noWhiteSpace = "[^\\s]+";
-
-        //TODO: Check if the user already exists
-
-        if (username.trim().isEmpty()) {
-            inputUsername.setError(getString(R.string.field_empty));
-            return false;
-        } else if (!username.matches(noWhiteSpace)) {
-            inputUsername.setError(getString(R.string.white_spaces));
-            return false;
-        } else{
-            inputUsername.setError(null);
-            inputUsername.setErrorEnabled(false);
-        }
-        return true;
-    }
 
     private Boolean validateEmail () {
         String email = inputEmail.getEditText().getText().toString();
@@ -178,27 +168,49 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void register(View view) {
 
-        if (!validateEmail() | !validateName() | !validatePassword() | !validateUsername() | !validateVerifyPassword() ) {
+        if (!validateEmail() | !validateName() | !validatePassword() | !validateVerifyPassword() ) {
             return;
         }
 
-        String name = inputName.getEditText().getText().toString();
-        String username = inputUsername.getEditText().getText().toString();
+        final String name = inputName.getEditText().getText().toString();
         String email = inputEmail.getEditText().getText().toString();
         String password = inputPassword.getEditText().getText().toString();
 
-        if (sqlite.storeUser(new User(username, name, email, password)) == -1) {
-            inputUsername.setError(getString(R.string.username_used));
-        } else {
+        Toast.makeText(getBaseContext(),"Loading...", Toast.LENGTH_SHORT).show();
 
-            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, null);
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
 
-            Intent intent = new Intent (this, LoginActivity.class);
-            startActivity(intent);
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
 
-            // Send a notification to the user if everything is correct
-            sendNotification();
-        }
+
+                            mAuth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        mAuth.signOut();
+                                        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, null);
+
+                                        Intent intent = new Intent (RegisterActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+
+                                        // Send a notification to the user if everything is correct
+                                        sendNotification();
+                                    } else {
+                                        Toast.makeText(getBaseContext(),"There was an error creating profile", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            inputEmail.setError(getString(R.string.email_used));
+                        }
+                    }
+                });
 
     }
 

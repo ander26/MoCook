@@ -8,18 +8,19 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 
 public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
 
     private RecyclerView.Adapter adapter;
     private List<Recipe> recipes;
     private SQLiteManager sqlite;
-    private User user;
+
     private ProgressBar progressBar;
     private TextView noRecipeText;
     private RecyclerView recyclerView;
@@ -27,7 +28,9 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
 
     private String searchRecipe = "";
 
-    public RecipeLoaderTask(Context context, RecyclerView.Adapter adapter, List<Recipe> recipes, User user, ProgressBar progressBar, TextView noRecipeText, RecyclerView recyclerView, int option) {
+    private FirebaseUser user;
+
+    public RecipeLoaderTask(Context context, RecyclerView.Adapter adapter, List<Recipe> recipes, FirebaseUser user, ProgressBar progressBar, TextView noRecipeText, RecyclerView recyclerView, int option) {
         this.adapter = adapter;
         this.recipes = recipes;
         this.user = user;
@@ -44,10 +47,10 @@ public class RecipeLoaderTask extends AsyncTask<Void, Void, List<Recipe>> {
         List<Recipe> data = new ArrayList<>();
         switch (option) {
             case 0:
-                data = sqlite.retrieveAllRecipesLikesUser(user.getUsername());
+                data = sqlite.retrieveAllRecipesLikesUser(user.getUid());
                 break;
             case 1:
-                data = sqlite.retrieveAllRecipesCreator(user.getUsername());
+                data = sqlite.retrieveAllRecipesCreator(user.getUid());
                 break;
             case 2:
                 data = sqlite.retrieveAllRecipes();

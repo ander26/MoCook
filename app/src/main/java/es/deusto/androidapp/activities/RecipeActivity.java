@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,16 +14,16 @@ import android.widget.TextView;
 
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class RecipeActivity extends AppCompatActivity {
 
-    private User user;
     private Recipe recipe;
 
     private SQLiteManager sqlite;
@@ -40,6 +39,8 @@ public class RecipeActivity extends AppCompatActivity {
     private boolean liked = false;
 
     private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
 
     private UserPropertyManager mUserPropertyManager;
 
@@ -55,14 +56,16 @@ public class RecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
 
+        initFirebaseAuth ();
+
         sqlite = new SQLiteManager(this);
 
-        user = getIntent().getParcelableExtra("user");
+
         int recipeID = getIntent().getIntExtra("recipe", 0);
 
         recipe = sqlite.retrieveRecipeID(recipeID).get(0);
 
-        if (!user.getUsername().equals(recipe.getCreator())) {
+        if (!mFirebaseUser.getUid().equals(recipe.getCreator())) {
             LinearLayout editingOptions = findViewById(R.id.editing_options);
             editingOptions.setVisibility(View.INVISIBLE);
         }
@@ -84,6 +87,8 @@ public class RecipeActivity extends AppCompatActivity {
 
         mUserPropertyManager = UserPropertyManager.getInstance();
 
+
+
     }
 
     private void loadRecipe (Recipe recipe) {
@@ -103,7 +108,6 @@ public class RecipeActivity extends AppCompatActivity {
     public void editRecipe (View view) {
 
         Intent intent = new Intent(this, CreateRecipeActivity.class);
-        intent.putExtra("user", user);
         intent.putExtra("recipe", recipe.getId());
         startActivity(intent);
     }
@@ -169,7 +173,7 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void checkLike() {
-        boolean likedDB = sqlite.checkLike(user.getUsername(), recipe.getId());
+        boolean likedDB = sqlite.checkLike(mFirebaseUser.getUid(), recipe.getId());
 
         if (likedDB) {
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
@@ -184,7 +188,7 @@ public class RecipeActivity extends AppCompatActivity {
         params.putString("recipe_category", recipe.getCategory());
 
         if (liked) {
-            sqlite.storeLike(user.getUsername(), recipe.getId());
+            sqlite.storeLike(mFirebaseUser.getUid(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
             mFirebaseAnalytics.logEvent("like_recipe", params);
             if (recipe.getCategory().equals(getString(R.string.desserts))) {
@@ -197,7 +201,7 @@ public class RecipeActivity extends AppCompatActivity {
                 mUserPropertyManager.registerUserAsVeggie(this);
             }
         } else {
-            sqlite.deleteLike(user.getUsername(), recipe.getId());
+            sqlite.deleteLike(mFirebaseUser.getUid(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
             mFirebaseAnalytics.logEvent("dislike_recipe", params);
             if (recipe.getCategory().equals(getString(R.string.desserts))) {
@@ -209,6 +213,16 @@ public class RecipeActivity extends AppCompatActivity {
             } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
                 mUserPropertyManager.decrementVeggieEatingUser();
             }
+        }
+    }
+
+    private void initFirebaseAuth() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if (mFirebaseUser == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 }

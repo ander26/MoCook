@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,6 @@ import es.deusto.androidapp.R;
 
 import es.deusto.androidapp.adapter.RecipeCreatedListAdapter;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 public class CreatedRecipesFragment extends Fragment {
@@ -28,7 +28,7 @@ public class CreatedRecipesFragment extends Fragment {
     private final ArrayList<Recipe> recipesCreated = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private User user;
+    private FirebaseUser user;
 
     private RecipeCreatedListAdapter mAdapter;
 
@@ -41,7 +41,7 @@ public class CreatedRecipesFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static CreatedRecipesFragment newInstance(User user) {
+    public static CreatedRecipesFragment newInstance(FirebaseUser user) {
         CreatedRecipesFragment fragment = new CreatedRecipesFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", user);
@@ -76,7 +76,7 @@ public class CreatedRecipesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         noRecipeText = view.findViewById(R.id.no_recipe);
 
-        mAdapter = new RecipeCreatedListAdapter(getContext(), user, recipesCreated, recyclerView, noRecipeText);
+        mAdapter = new RecipeCreatedListAdapter(getContext(), recipesCreated, recyclerView, noRecipeText);
 
         recyclerView.setAdapter(mAdapter);
 

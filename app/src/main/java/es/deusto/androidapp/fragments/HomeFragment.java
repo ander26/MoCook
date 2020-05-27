@@ -17,13 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.adapter.AllRecipeListAdapter;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 
@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
     private final ArrayList<Recipe> recipes = new ArrayList<>();
     private RecyclerView recyclerView;
 
-    private User user;
+    private FirebaseUser user;
 
     private AllRecipeListAdapter mAdapter;
 
@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public static HomeFragment newInstance(User user) {
+    public static HomeFragment newInstance(FirebaseUser user) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", user);
@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         noRecipeText = view.findViewById(R.id.no_recipe);
 
-        mAdapter = new AllRecipeListAdapter(getContext(), user, recipes, recyclerView, noRecipeText);
+        mAdapter = new AllRecipeListAdapter(getContext(), recipes, recyclerView, noRecipeText);
 
         recyclerView.setAdapter(mAdapter);
 
