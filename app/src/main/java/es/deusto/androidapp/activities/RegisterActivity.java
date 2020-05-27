@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.User;
@@ -38,6 +39,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private NotificationManager mNotifyManager;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Create the notification channel.
         createNotificationChannel();
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     }
 
@@ -185,6 +190,9 @@ public class RegisterActivity extends AppCompatActivity {
         if (sqlite.storeUser(new User(username, name, email, password)) == -1) {
             inputUsername.setError(getString(R.string.username_used));
         } else {
+
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, null);
+
             Intent intent = new Intent (this, LoginActivity.class);
             startActivity(intent);
 

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private SQLiteManager sqlite;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.password_input);
 
         sqlite = new SQLiteManager(this);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     }
 
@@ -88,6 +93,9 @@ public class LoginActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(this, text, duration);
             toast.show();
         }  else {
+            Bundle params = new Bundle();
+            params.putString(FirebaseAnalytics.Param.METHOD, "email");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, params);
             Intent intent = new Intent(this, DashboardActivity.class);
             intent.putExtra("user", users.get(0));
             startActivity(intent);

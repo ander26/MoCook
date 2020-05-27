@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
@@ -36,6 +38,8 @@ public class HomeFragment extends Fragment {
 
     private ProgressBar progressBar;
     private TextView noRecipeText;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -101,6 +105,8 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
         return view;
     }
 
@@ -113,6 +119,9 @@ public class HomeFragment extends Fragment {
             option = 2;
         } else {
             option = 3;
+            Bundle params = new Bundle();
+            params.putString(FirebaseAnalytics.Param.SEARCH_TERM, searchText);
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, params);
         }
 
         RecipeLoaderTask task = new RecipeLoaderTask(getContext(), mAdapter, recipes, user, progressBar, noRecipeText, recyclerView, option);

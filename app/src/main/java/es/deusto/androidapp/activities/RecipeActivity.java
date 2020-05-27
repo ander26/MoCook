@@ -7,16 +7,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
+import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class RecipeActivity extends AppCompatActivity {
 
@@ -34,6 +38,10 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView recipeDescription;
 
     private boolean liked = false;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private UserPropertyManager mUserPropertyManager;
 
     @Override
     public void onResume(){
@@ -72,6 +80,10 @@ public class RecipeActivity extends AppCompatActivity {
 
         checkLike();
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        mUserPropertyManager = UserPropertyManager.getInstance();
+
     }
 
     private void loadRecipe (Recipe recipe) {
@@ -89,6 +101,7 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void editRecipe (View view) {
+
         Intent intent = new Intent(this, CreateRecipeActivity.class);
         intent.putExtra("user", user);
         intent.putExtra("recipe", recipe.getId());
@@ -103,6 +116,12 @@ public class RecipeActivity extends AppCompatActivity {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+                        Bundle params = new Bundle();
+                        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+                        params.putString("recipe_name", recipe.getName());
+                        mFirebaseAnalytics.logEvent("delete_recipe", params);
+
                         sqlite.deleteRecipe(recipe);
                         finish();
                     }
@@ -113,6 +132,11 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void searchMap(View view) {
+
+        Bundle params = new Bundle();
+        params.putString("search_country", recipe.getCountry());
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        mFirebaseAnalytics.logEvent("consult_map", params);
 
         Uri location = Uri.parse("geo:0,0?q=" + recipe.getCountry().replace(" ", "+"));
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
@@ -127,6 +151,14 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void shareRecipe(View view) {
+
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "recipe");
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, params);
+
+        mUserPropertyManager.registerUserAsInfluencer(this);
+
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text) + " " +  recipe.getName());
@@ -147,13 +179,36 @@ public class RecipeActivity extends AppCompatActivity {
 
     public void likeRecipe(View view) {
         liked = !liked;
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        params.putString("recipe_category", recipe.getCategory());
 
         if (liked) {
             sqlite.storeLike(user.getUsername(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+            mFirebaseAnalytics.logEvent("like_recipe", params);
+            if (recipe.getCategory().equals(getString(R.string.desserts))) {
+                mUserPropertyManager.registerUserAsPastryChef(this);
+            } else if (recipe.getCategory().equals(getString(R.string.meat))) {
+                mUserPropertyManager.registerUserAsMeatEating(this);
+            } else if (recipe.getCategory().equals(getString(R.string.fish))) {
+                mUserPropertyManager.incrementFishEatingUser();
+            } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
+                mUserPropertyManager.registerUserAsVeggie(this);
+            }
         } else {
             sqlite.deleteLike(user.getUsername(), recipe.getId());
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
+            mFirebaseAnalytics.logEvent("dislike_recipe", params);
+            if (recipe.getCategory().equals(getString(R.string.desserts))) {
+                mUserPropertyManager.decrementPastryChefUser();
+            } else if (recipe.getCategory().equals(getString(R.string.meat))) {
+                mUserPropertyManager.decrementMeatEatingUser();
+            } else if (recipe.getCategory().equals(getString(R.string.fish))) {
+                mUserPropertyManager.decrementFishEatingUser();
+            } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
+                mUserPropertyManager.decrementVeggieEatingUser();
+            }
         }
     }
 }

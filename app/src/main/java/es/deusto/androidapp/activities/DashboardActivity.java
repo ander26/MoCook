@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.User;
@@ -22,6 +23,8 @@ public class DashboardActivity extends AppCompatActivity {
 
     private User user;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,7 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         BottomNavigationView navigation = findViewById(R.id.bottom_navigation);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -39,12 +43,15 @@ public class DashboardActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.navigation_home:
                         fragment = HomeFragment.newInstance(user);
+                        mFirebaseAnalytics.logEvent("check_home", null);
                         break;
                     case R.id.navigation_liked:
                         fragment = MyListFragment.newInstance(user);
+                        mFirebaseAnalytics.logEvent("check_my_list", null);
                         break;
                     case R.id.navigation_user:
                         fragment = UserFragment.newInstance(user);
+                        mFirebaseAnalytics.logEvent("check_user_profile", null);
                         break;
                 }
                 replaceFragment(fragment);
@@ -53,6 +60,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         setInitialFragment();
+
     }
 
     private void setInitialFragment() {

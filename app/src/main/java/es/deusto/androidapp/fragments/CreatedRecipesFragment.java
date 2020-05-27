@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
@@ -32,6 +34,8 @@ public class CreatedRecipesFragment extends Fragment {
 
     private ProgressBar progressBar;
     private TextView noRecipeText;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public CreatedRecipesFragment() {
         // Required empty public constructor
@@ -79,6 +83,9 @@ public class CreatedRecipesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         progressBar = view.findViewById(R.id.progress_bar);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        mFirebaseAnalytics.logEvent("check_created_recipes", null);
 
         return view;
     }

@@ -32,6 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.InputStream;
 
@@ -39,6 +40,7 @@ import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
+import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
@@ -58,6 +60,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private TextView activityTitle;
     private AppCompatButton createButton;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private UserPropertyManager mUserPropertyManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
             editMode();
         }
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mUserPropertyManager = UserPropertyManager.getInstance();
     }
 
     public void selectImage(View view) {
@@ -189,6 +197,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
                     if (resultCode == RESULT_OK && data != null) {
                         bitmapRecipe = (Bitmap) data.getExtras().get("data");
                         recipeImage.setImageBitmap(bitmapRecipe);
+                        addImageAnalytic("camera");
                     }
                     break;
                 case 1:
@@ -199,6 +208,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
                              InputStream imageStream = getContentResolver().openInputStream(imageUri);
                              bitmapRecipe= BitmapFactory.decodeStream(imageStream);
                              recipeImage.setImageBitmap(bitmapRecipe);
+                             addImageAnalytic("gallery");
                         } catch (Exception e) {
                             showDialog(getString(R.string.error_dialog_title), getString(R.string.error_dialog_message));
                         }
@@ -269,6 +279,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
                             public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                                 bitmapRecipe = resource;
                                 recipeImage.setImageBitmap(bitmapRecipe);
+                                addImageAnalytic("internet");
                             }
                             @Override
                             public void onLoadCleared( Drawable placeholder) {
@@ -322,6 +333,13 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String description = inputDescription.getEditText().getText().toString();
 
         Recipe recipe = new Recipe(name, country, category, ingredients, description, user.getUsername(), bitmapRecipe);
+        Bundle params = new Bundle();
+        params.putString("recipe_name", recipe.getName());
+        params.putString("recipe_category", recipe.getCategory());
+        mFirebaseAnalytics.logEvent("create_recipe", params);
+
+        mUserPropertyManager.registerUserAsCreator(this);
+
         sqlite.storeRecipe(recipe);
 
         CharSequence text = "Recipe created";
@@ -376,14 +394,23 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         sqlite.updateRecipe(recipe);
 
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        mFirebaseAnalytics.logEvent("edit_recipe", params);
+
         CharSequence text = "Recipe updated";
         int duration = Toast.LENGTH_SHORT;
-
         Toast toast = Toast.makeText(this, text, duration);
         toast.show();
 
         finish();
 
+    }
+
+    private void addImageAnalytic (String type) {
+        Bundle params = new Bundle();
+        params.putString(FirebaseAnalytics.Param.METHOD, type);
+        mFirebaseAnalytics.logEvent("add_image", params);
     }
 
 
