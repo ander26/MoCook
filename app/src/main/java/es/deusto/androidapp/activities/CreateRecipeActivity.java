@@ -40,6 +40,7 @@ import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.data.User;
 import es.deusto.androidapp.manager.SQLiteManager;
+import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
 
@@ -61,6 +62,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private AppCompatButton createButton;
 
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    private UserPropertyManager mUserPropertyManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +106,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         }
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mUserPropertyManager = UserPropertyManager.getInstance();
     }
 
     public void selectImage(View view) {
@@ -333,6 +337,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
         params.putString("recipe_name", recipe.getName());
         params.putString("recipe_category", recipe.getCategory());
         mFirebaseAnalytics.logEvent("create_recipe", params);
+
+        mUserPropertyManager.registerUserAsCreator(this);
+
         sqlite.storeRecipe(recipe);
 
         CharSequence text = "Recipe created";
