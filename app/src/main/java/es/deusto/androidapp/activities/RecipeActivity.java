@@ -1,5 +1,6 @@
 package es.deusto.androidapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,10 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
@@ -23,6 +25,7 @@ import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class RecipeActivity extends AppCompatActivity {
+
 
     private Recipe recipe;
 
@@ -43,6 +46,8 @@ public class RecipeActivity extends AppCompatActivity {
     private FirebaseUser mFirebaseUser;
 
     private UserPropertyManager mUserPropertyManager;
+
+    private DatabaseReference mFirebaseDatabaseRef;
 
     @Override
     public void onResume(){
@@ -88,7 +93,12 @@ public class RecipeActivity extends AppCompatActivity {
         mUserPropertyManager = UserPropertyManager.getInstance();
 
 
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initFirebaseDatabaseReference();
     }
 
     private void loadRecipe (Recipe recipe) {
@@ -189,6 +199,7 @@ public class RecipeActivity extends AppCompatActivity {
 
         if (liked) {
             sqlite.storeLike(mFirebaseUser.getUid(), recipe.getId());
+
             likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
             mFirebaseAnalytics.logEvent("like_recipe", params);
             if (recipe.getCategory().equals(getString(R.string.desserts))) {
@@ -224,5 +235,9 @@ public class RecipeActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void initFirebaseDatabaseReference () {
+        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
     }
 }

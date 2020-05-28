@@ -14,6 +14,9 @@ import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -37,6 +40,10 @@ public class CreatedRecipesFragment extends Fragment {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    private DatabaseReference mRecipesRef;
+    private ChildEventListener mRecipesChildEventListener;
+    private DatabaseReference mFirebaseDatabaseRef;
+
     public CreatedRecipesFragment() {
         // Required empty public constructor
     }
@@ -55,15 +62,27 @@ public class CreatedRecipesFragment extends Fragment {
         if (getArguments() != null) {
             user = getArguments().getParcelable("user");
         }
+        initFirebaseDatabaseMessageRefListener();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        recipesCreated.clear();
-        mAdapter.notifyDataSetChanged();
-        progressBar.setVisibility(View.VISIBLE);
-        new RecipeLoaderTask(getContext(), mAdapter, recipesCreated, user, progressBar, noRecipeText, recyclerView, 1).execute();
+        noRecipeText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        if (mRecipesRef != null) {
+            recipesCreated.clear();
+            mRecipesMap.clear();
+            mRecipesRef.addChildEventListener(mRecipesChildEventListener);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (mRecipesRef != null) {
+            mRecipesRef.removeEventListener(mRecipesChildEventListener);
+        }
+        super.onPause();
     }
 
     @Override
@@ -88,5 +107,9 @@ public class CreatedRecipesFragment extends Fragment {
         mFirebaseAnalytics.logEvent("check_created_recipes", null);
 
         return view;
+    }
+
+    private void initFirebaseDatabaseReference() {
+        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
     }
 }

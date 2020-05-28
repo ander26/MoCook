@@ -21,6 +21,17 @@ public class Recipe implements Parcelable {
 
     private Bitmap picture;
 
+    public Recipe() {}
+
+    public Recipe(String name, String country, String category, String ingredients, String description, String creator) {
+        this.name = name;
+        this.country = country;
+        this.category = category;
+        this.ingredients = ingredients;
+        this.description = description;
+        this.creator = creator;
+    }
+
     public Recipe(String name, String country, String category, String ingredients, String description, String creator, Bitmap picture) {
         this.name = name;
         this.country = country;
