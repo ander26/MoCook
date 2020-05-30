@@ -134,10 +134,13 @@ public class MyListFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Recipe recipe = dataSnapshot.getValue(Recipe.class);
-                        recipe.setId(dataSnapshot.getKey());
-                        mRecipesMap.put(dataSnapshot.getKey(), recipe);
-                        recipesLiked.add(recipe);
-                        mAdapter.notifyDataSetChanged();
+                        if (recipe != null) {
+                            recipe.setId(dataSnapshot.getKey());
+                            mRecipesMap.put(dataSnapshot.getKey(), recipe);
+                            recipesLiked.add(recipe);
+                            mAdapter.notifyDataSetChanged();
+                        }
+
                     }
 
                     @Override

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -25,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
@@ -127,7 +130,28 @@ public class RecipeActivity extends AppCompatActivity {
     private void loadRecipe (Recipe recipe) {
 
         if (recipe.getPicture() != null) {
-            recipeImage.setImageBitmap(recipe.getPicture());
+            if (recipe.getPicture().startsWith("gs://") ||
+                    recipe.getPicture().startsWith("https://firebasestorage.googleapis.com/"))
+            {
+
+                StorageReference storageRef = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(recipe.getPicture());
+
+                storageRef.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+                                    Glide.with(recipeImage.getContext())
+                                            .load(downloadUrl)
+                                            .into(recipeImage);
+                                } else {
+                                    recipeImage.setImageDrawable(getDrawable(R.drawable.loader_background));
+                                }
+                            }
+                        });
+            }
         }
 
         recipeName.setText(recipe.getName());
@@ -162,6 +186,9 @@ public class RecipeActivity extends AppCompatActivity {
                                 params.putString("recipe_name", recipe.getName());
                                 mFirebaseAnalytics.logEvent("delete_recipe", params);
                                 Toast.makeText(getBaseContext(),"Recipe deleted", Toast.LENGTH_SHORT).show();
+                                StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                                StorageReference imageRef = storageRef.child(CreateRecipeActivity.IMAGES_FOLDER).child(recipeID);
+                                imageRef.delete();
                                 finish();
                             }
                         });
