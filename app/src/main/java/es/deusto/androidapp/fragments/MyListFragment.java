@@ -109,6 +109,7 @@ public class MyListFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         noRecipeText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
 
         return view;
     }
