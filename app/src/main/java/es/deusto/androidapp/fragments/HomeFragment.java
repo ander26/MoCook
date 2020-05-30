@@ -35,15 +35,15 @@ import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.CreateRecipeActivity;
 import es.deusto.androidapp.adapter.AllRecipeListAdapter;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.RecipeLoaderTask;
-
 
 public class HomeFragment extends Fragment {
 
     private static final String TAG = HomeFragment.class.getName();
 
-    private final ArrayList<Recipe> recipes = new ArrayList<>();
+    private  ArrayList<Recipe> recipes = new ArrayList<>();
+    private final ArrayList<Recipe> recipesSearch = new ArrayList<>();
     private Map<String, Recipe> mRecipesMap = new HashMap<>();
+
     private RecyclerView recyclerView;
 
     private FirebaseUser user;
@@ -57,7 +57,6 @@ public class HomeFragment extends Fragment {
 
     private DatabaseReference mRecipesRef;
     private ChildEventListener mRecipesChildEventListener;
-    private DatabaseReference mFirebaseDatabaseRef;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -83,6 +82,26 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        if (mRecipesChildEventListener == null) {
+            recipes.clear();
+            mRecipesMap.clear();
+            initFirebaseDatabaseReference();
+            initFirebaseDatabaseMessageRefListener();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        if (mRecipesRef != null) {
+            mRecipesRef.removeEventListener(mRecipesChildEventListener);
+            mRecipesChildEventListener = null;
+        }
+        super.onPause();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -100,6 +119,7 @@ public class HomeFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
+
         final EditText searchBar = view.findViewById(R.id.search_bar_text);
 
         searchBar.setOnKeyListener(new View.OnKeyListener() {
@@ -116,54 +136,66 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        noRecipeText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
         return view;
     }
 
     private void searchRecipe (String searchText) {
-        recipes.clear();
-        mAdapter.notifyDataSetChanged();
+
         progressBar.setVisibility(View.VISIBLE);
-        int option;
-        if (searchText.trim().isEmpty()) {
-            option = 2;
-        } else {
-            option = 3;
-            Bundle params = new Bundle();
-            params.putString(FirebaseAnalytics.Param.SEARCH_TERM, searchText);
-            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, params);
-        }
-
-        RecipeLoaderTask task = new RecipeLoaderTask(getContext(), mAdapter, recipes, user, progressBar, noRecipeText, recyclerView, option);
-        task.setSearchRecipe(searchText);
-        task.execute();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        noRecipeText.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
-        if (mRecipesRef != null) {
+        noRecipeText.setVisibility(View.GONE);
+        recipesSearch.clear();
+
+        if (searchText.trim().isEmpty()) {
+            mAdapter.setRecipes(recipes);
+            progressBar.setVisibility(View.GONE);
+            noRecipeText.setVisibility(View.VISIBLE);
             recipes.clear();
             mRecipesMap.clear();
-            mRecipesRef.addChildEventListener(mRecipesChildEventListener);
-        }
-    }
+            initFirebaseDatabaseReference();
+            initFirebaseDatabaseMessageRefListener();
+        } else {
+            if (mRecipesChildEventListener != null) {
+                mRecipesRef.removeEventListener(mRecipesChildEventListener);
+                mRecipesChildEventListener = null;
+            }
 
-    @Override
-    public void onPause() {
-        if (mRecipesRef != null) {
-            mRecipesRef.removeEventListener(mRecipesChildEventListener);
+            for (Recipe recipe: recipes) {
+                if (recipe.getName().contains(searchText) || recipe.getIngredients().contains(searchText) || recipe.getDescription().contains(searchText)) {
+                    Log.d(TAG, "Añado receta");
+                    recipesSearch.add(recipe);
+                }
+            }
+
+            progressBar.setVisibility(View.GONE);
+
+            if (recipesSearch.size() == 0) {
+                noRecipeText.setVisibility(View.VISIBLE);
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                mAdapter.setRecipes(recipesSearch);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            Bundle params = new Bundle();
+            params.putString(FirebaseAnalytics.Param.SEARCH_TERM, searchText);
+
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, params);
         }
-        super.onPause();
     }
 
 
     private void initFirebaseDatabaseMessageRefListener() {
-        mRecipesRef = mFirebaseDatabaseRef.child(CreateRecipeActivity.RECIPES_CHILD);
-        mRecipesChildEventListener = new ChildEventListener() {@Override
+
+        mRecipesRef = mRecipesRef.child(CreateRecipeActivity.RECIPES_CHILD);
+
+        mRecipesChildEventListener = new ChildEventListener() {
+            @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot,
                                  @Nullable String s) {
                 if (recipes.size() == 0 ) {
@@ -221,7 +253,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void initFirebaseDatabaseReference() {
-        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        recipes.clear();
+        mRecipesMap.clear();
+        mRecipesRef = FirebaseDatabase.getInstance().getReference();
     }
 
 }

@@ -19,7 +19,7 @@ import es.deusto.androidapp.data.Recipe;
 
 public class AllRecipeListAdapter extends RecyclerView.Adapter <AllRecipeListAdapter.RecipeViewHolder> {
 
-    private final ArrayList<Recipe> recipes;
+    private ArrayList<Recipe> recipes;
 
     private final Context context;
     private final LayoutInflater mInflater;
@@ -91,5 +91,9 @@ public class AllRecipeListAdapter extends RecyclerView.Adapter <AllRecipeListAda
     @Override
     public int getItemCount() {
         return recipes.size();
+    }
+
+    public void setRecipes(ArrayList<Recipe> recipes) {
+        this.recipes = recipes;
     }
 }
