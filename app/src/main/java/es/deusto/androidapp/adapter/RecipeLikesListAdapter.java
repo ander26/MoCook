@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesListAdapter.RecipeLikesViewHolder> {
 
@@ -27,7 +26,6 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
     private final FirebaseUser user;
     private final Context context;
     private final LayoutInflater mInflater;
-    private SQLiteManager sqlite;
 
     private final TextView noRecipeText;
     private final RecyclerView recyclerView;
@@ -80,7 +78,6 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
         this.user = user;
         this.recyclerView = recyclerView;
         this.noRecipeText = noRecipeText;
-        sqlite = new SQLiteManager(context);
     }
 
     @Override

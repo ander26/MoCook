@@ -48,7 +48,6 @@ import java.io.InputStream;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
@@ -66,7 +65,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private Bitmap bitmapRecipe;
 
     private Recipe recipe;
-    private SQLiteManager sqlite;
 
     private TextView activityTitle;
     private AppCompatButton createButton;
@@ -110,11 +108,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         dropdown.setText(COUNTRIES[0], false);
 
-        sqlite = new SQLiteManager(this);
-
         recipeID = getIntent().getStringExtra("recipe");
-
-
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mUserPropertyManager = UserPropertyManager.getInstance();

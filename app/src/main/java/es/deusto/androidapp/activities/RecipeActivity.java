@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class RecipeActivity extends AppCompatActivity {

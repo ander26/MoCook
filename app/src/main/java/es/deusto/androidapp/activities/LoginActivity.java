@@ -26,14 +26,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputLayout inputUsername;
     private TextInputLayout inputPassword;
-
-    private SQLiteManager sqlite;
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseAuth mFirebaseAuth;
@@ -50,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
 
         inputUsername = findViewById(R.id.username_input);
         inputPassword = findViewById(R.id.password_input);
-
-        sqlite = new SQLiteManager(this);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
