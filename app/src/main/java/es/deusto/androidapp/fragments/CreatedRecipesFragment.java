@@ -81,6 +81,8 @@ public class CreatedRecipesFragment extends Fragment {
         if (queryRef == null) {
             recipesCreated.clear();
             mRecipesMap.clear();
+            noRecipeText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
             initFirebaseDatabaseReference();
             initFirebaseDatabaseMessageRefListener();
         }
@@ -136,6 +138,7 @@ public class CreatedRecipesFragment extends Fragment {
 
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                recipe.setId(dataSnapshot.getKey());
                 mRecipesMap.put(dataSnapshot.getKey(), recipe);
                 recipesCreated.add(recipe);
                 mAdapter.notifyDataSetChanged();

@@ -180,7 +180,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(id, name, country, categoryDB, ingredients, description, creatorDB, image));
+            recipes.add(new Recipe(id + "", name, country, categoryDB, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }
@@ -212,7 +212,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(id, name, country, category, ingredients, description, creator, image));
+            recipes.add(new Recipe(id + "", name, country, category, ingredients, description, creator, image));
 
             cursor.moveToNext();
         }
@@ -244,7 +244,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(idDB, name, country, category, ingredients, description, creatorDB, image));
+            recipes.add(new Recipe(idDB + "", name, country, category, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }
@@ -276,7 +276,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(id, name, country, category, ingredients, description, creatorDB, image));
+            recipes.add(new Recipe(id + "", name, country, category, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }
@@ -308,7 +308,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(id, name, country, categoryDB, ingredients, description, creatorDB, image));
+            recipes.add(new Recipe(id + "", name, country, categoryDB, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }
@@ -334,7 +334,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             byte [] image = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE));
 
-            recipes.add(new Recipe(id, name, country, categoryDB, ingredients, description, creatorDB, image));
+            recipes.add(new Recipe(id + "", name, country, categoryDB, ingredients, description, creatorDB, image));
 
             cursor.moveToNext();
         }

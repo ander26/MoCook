@@ -44,7 +44,7 @@ public class RecipeCreatedListAdapter extends RecyclerView.Adapter <RecipeCreate
 
             int position = getLayoutPosition();
 
-            int recipeID = recipes.get(position).getId();
+            String recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
             intent.putExtra("recipe", recipeID);

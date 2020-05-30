@@ -38,8 +38,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.InputStream;
 
@@ -76,6 +79,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private FirebaseUser mFirebaseUser;
 
     private DatabaseReference mFirebaseDatabaseRef;
+    private String recipeID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +112,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         sqlite = new SQLiteManager(this);
 
-        int recipeID = getIntent().getIntExtra("recipe", -1);
+        recipeID = getIntent().getStringExtra("recipe");
 
-        if (recipeID != -1) {
-            recipe = sqlite.retrieveRecipeID(recipeID).get(0);
-            editMode();
-        }
+
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mUserPropertyManager = UserPropertyManager.getInstance();
@@ -235,6 +236,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
         super.onStart();
         initFirebaseAuth ();
         initFirebaseDatabaseReference();
+        if (recipeID != null) {
+            retrieveRecipe(recipeID);
+        }
     }
 
     @Override
@@ -428,10 +432,12 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         recipe.setPicture(bitmapRecipe);
 
-        sqlite.updateRecipe(recipe);
+        recipe.setId(null);
+
+        mFirebaseDatabaseRef.setValue(recipe);
 
         Bundle params = new Bundle();
-        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, recipe.getId());
         mFirebaseAnalytics.logEvent("edit_recipe", params);
 
         CharSequence text = "Recipe updated";
@@ -462,5 +468,27 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private void initFirebaseDatabaseReference () {
         mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
+    }
+
+    private void retrieveRecipe(final String recipeID) {
+        mFirebaseDatabaseRef = mFirebaseDatabaseRef.child(CreateRecipeActivity.RECIPES_CHILD).child(recipeID);
+
+        ValueEventListener mRecipeValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    recipe = dataSnapshot.getValue(Recipe.class);
+                    recipe.setId(recipeID);
+                    editMode();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        mFirebaseDatabaseRef.addListenerForSingleValueEvent(mRecipeValueEventListener);
     }
 }

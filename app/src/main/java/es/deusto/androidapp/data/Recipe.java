@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 
 public class Recipe implements Parcelable {
 
-    private int id;
+    private String id;
     private String name;
     private String country;
     private String category;
@@ -42,7 +42,7 @@ public class Recipe implements Parcelable {
         this.picture = picture;
     }
 
-    public Recipe(int id, String name, String country, String category, String ingredients, String description, String creator, byte [] picture) {
+    public Recipe(String id, String name, String country, String category, String ingredients, String description, String creator, byte [] picture) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -56,11 +56,11 @@ public class Recipe implements Parcelable {
 
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -140,7 +140,7 @@ public class Recipe implements Parcelable {
     }
 
     public Recipe (Parcel p){
-        id = p.readInt();
+        id = p.readString();
         name = p.readString();
         country = p.readString();
         category = p.readString();
@@ -157,7 +157,7 @@ public class Recipe implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(getId());
+        dest.writeString(getId());
         dest.writeString(getName());
         dest.writeString(getCountry());
         dest.writeString(getCategory());

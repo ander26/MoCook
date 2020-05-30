@@ -86,15 +86,18 @@ public class HomeFragment extends Fragment {
         if (mRecipesChildEventListener == null) {
             recipes.clear();
             mRecipesMap.clear();
+            noRecipeText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
             initFirebaseDatabaseReference();
             initFirebaseDatabaseMessageRefListener();
+            Log.i("RECIPE", "ESTOY AQUI");
         }
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        if (mRecipesRef != null) {
+        if (mRecipesChildEventListener != null) {
             mRecipesRef.removeEventListener(mRecipesChildEventListener);
             mRecipesChildEventListener = null;
         }
@@ -167,7 +170,6 @@ public class HomeFragment extends Fragment {
 
             for (Recipe recipe: recipes) {
                 if (recipe.getName().contains(searchText) || recipe.getIngredients().contains(searchText) || recipe.getDescription().contains(searchText)) {
-                    Log.d(TAG, "Añado receta");
                     recipesSearch.add(recipe);
                 }
             }
@@ -205,6 +207,7 @@ public class HomeFragment extends Fragment {
 
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
                 Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                recipe.setId(dataSnapshot.getKey());
                 mRecipesMap.put(dataSnapshot.getKey(), recipe);
                 recipes.add(recipe);
                 mAdapter.notifyDataSetChanged();

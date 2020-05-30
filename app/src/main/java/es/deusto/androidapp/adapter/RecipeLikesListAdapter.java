@@ -48,7 +48,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
                 @Override
                 public void onClick(View v) {
                     int position = getLayoutPosition();
-                    sqlite.deleteLike(user.getUid(), recipes.get(position).getId());
+                    //sqlite.deleteLike(user.getUid(), recipes.get(position).getId());
                     recipes.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, recipes.size());
@@ -71,7 +71,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
 
             int position = getLayoutPosition();
 
-            int recipeID = recipes.get(position).getId();
+            String recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
             intent.putExtra("user", user);
