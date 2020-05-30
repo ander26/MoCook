@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
 import es.deusto.androidapp.manager.SQLiteManager;
@@ -32,6 +36,8 @@ import es.deusto.androidapp.manager.UserPropertyManager;
 public class RecipeActivity extends AppCompatActivity {
 
     private static final String TAG = RecipeActivity.class.getName();
+
+    public static final String LIKES_CHILD = "likes";
 
     private Recipe recipe;
 
@@ -43,11 +49,12 @@ public class RecipeActivity extends AppCompatActivity {
     private TextView recipeIngredients;
     private TextView recipeDescription;
 
-    private SQLiteManager sqlite;
-
     private DatabaseReference mRecipeRef;
     private ValueEventListener mRecipeValueEventListener;
     private String recipeID;
+
+    private DatabaseReference mLikeRef;
+    private ValueEventListener mLikeValueEventListener;
 
     private boolean liked = false;
 
@@ -77,9 +84,6 @@ public class RecipeActivity extends AppCompatActivity {
         recipeDescription = findViewById(R.id.recipe_description);
         likeIcon = findViewById(R.id.like_icon);
 
-        //TODO: Comprobar esto
-        //checkLike();
-
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mUserPropertyManager = UserPropertyManager.getInstance();
@@ -101,6 +105,7 @@ public class RecipeActivity extends AppCompatActivity {
                         LinearLayout editingOptions = findViewById(R.id.editing_options);
                         editingOptions.setVisibility(View.VISIBLE);
                     }
+                    checkLike();
                 }
             }
 
@@ -116,6 +121,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     private void initFirebaseDatabaseReference() {
         mRecipeRef = FirebaseDatabase.getInstance().getReference();
+        mLikeRef = FirebaseDatabase.getInstance().getReference();
     }
 
 
@@ -206,47 +212,78 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void checkLike() {
-        boolean likedDB = sqlite.checkLike(mFirebaseUser.getUid(), Integer.parseInt(recipe.getId()));
 
-        if (likedDB) {
-            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
-            liked = true;
+        if (mLikeValueEventListener != null) {
+            mLikeRef.removeEventListener(mLikeValueEventListener);
         }
+
+        mLikeRef = mLikeRef.child(LIKES_CHILD).child(mFirebaseUser.getUid()).child(recipe.getId());
+
+        mLikeValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+                    liked = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        mLikeRef.addListenerForSingleValueEvent(mLikeValueEventListener);
+
     }
 
     public void likeRecipe(View view) {
         liked = !liked;
-        Bundle params = new Bundle();
+        final Bundle params = new Bundle();
         params.putString(FirebaseAnalytics.Param.ITEM_ID, recipe.getId());
         params.putString("recipe_category", recipe.getCategory());
 
         if (liked) {
-            sqlite.storeLike(mFirebaseUser.getUid(), Integer.parseInt(recipe.getId()));
+            HashMap<String, Boolean> like = new HashMap<>();
+            like.put("liked", true);
 
-            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
-            mFirebaseAnalytics.logEvent("like_recipe", params);
-            if (recipe.getCategory().equals(getString(R.string.desserts))) {
-                mUserPropertyManager.registerUserAsPastryChef(this);
-            } else if (recipe.getCategory().equals(getString(R.string.meat))) {
-                mUserPropertyManager.registerUserAsMeatEating(this);
-            } else if (recipe.getCategory().equals(getString(R.string.fish))) {
-                mUserPropertyManager.incrementFishEatingUser();
-            } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
-                mUserPropertyManager.registerUserAsVeggie(this);
-            }
+            mLikeRef.setValue(like).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_full));
+                    mFirebaseAnalytics.logEvent("like_recipe", params);
+                    if (recipe.getCategory().equals(getString(R.string.desserts))) {
+                        mUserPropertyManager.registerUserAsPastryChef(RecipeActivity.this);
+                    } else if (recipe.getCategory().equals(getString(R.string.meat))) {
+                        mUserPropertyManager.registerUserAsMeatEating(RecipeActivity.this);
+                    } else if (recipe.getCategory().equals(getString(R.string.fish))) {
+                        mUserPropertyManager.incrementFishEatingUser();
+                    } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
+                        mUserPropertyManager.registerUserAsVeggie(RecipeActivity.this);
+                    }
+                }
+            });
+
+
         } else {
-            sqlite.deleteLike(mFirebaseUser.getUid(), Integer.parseInt(recipe.getId()));
-            likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
-            mFirebaseAnalytics.logEvent("dislike_recipe", params);
-            if (recipe.getCategory().equals(getString(R.string.desserts))) {
-                mUserPropertyManager.decrementPastryChefUser();
-            } else if (recipe.getCategory().equals(getString(R.string.meat))) {
-                mUserPropertyManager.decrementMeatEatingUser();
-            } else if (recipe.getCategory().equals(getString(R.string.fish))) {
-                mUserPropertyManager.decrementFishEatingUser();
-            } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
-                mUserPropertyManager.decrementVeggieEatingUser();
-            }
+            mLikeRef.removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    likeIcon.setImageDrawable(getDrawable(R.drawable.ic_heart_border));
+                    mFirebaseAnalytics.logEvent("dislike_recipe", params);
+                    if (recipe.getCategory().equals(getString(R.string.desserts))) {
+                        mUserPropertyManager.decrementPastryChefUser();
+                    } else if (recipe.getCategory().equals(getString(R.string.meat))) {
+                        mUserPropertyManager.decrementMeatEatingUser();
+                    } else if (recipe.getCategory().equals(getString(R.string.fish))) {
+                        mUserPropertyManager.decrementFishEatingUser();
+                    } else if (recipe.getCategory().equals(getString(R.string.salads)) || recipe.getCategory().equals(getString(R.string.vegetables)) ) {
+                        mUserPropertyManager.decrementVeggieEatingUser();
+                    }
+                }
+            });
+
         }
     }
 

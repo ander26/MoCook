@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -48,18 +49,9 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
                 @Override
                 public void onClick(View v) {
                     int position = getLayoutPosition();
-                    //sqlite.deleteLike(user.getUid(), recipes.get(position).getId());
-                    recipes.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, recipes.size());
 
-                    if (recipes.size() == 0) {
-                        noRecipeText.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.GONE);
-                    } else {
-                        noRecipeText.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
+                    FirebaseDatabase.getInstance().getReference().child(RecipeActivity.LIKES_CHILD).
+                            child(user.getUid()).child(recipes.get(position).getId()).removeValue();
 
                 }
             });
