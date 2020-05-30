@@ -127,6 +127,12 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mUserPropertyManager = UserPropertyManager.getInstance();
+        initFirebaseAuth ();
+        initFirebaseDatabaseReference();
+        initFirebaseCloudStorage();
+        if (recipeID != null) {
+            retrieveRecipe(recipeID);
+        }
 
     }
 
@@ -240,16 +246,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        initFirebaseAuth ();
-        initFirebaseDatabaseReference();
-        initFirebaseCloudStorage();
-        if (recipeID != null) {
-            retrieveRecipe(recipeID);
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -535,18 +531,33 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         recipe.setId(null);
 
-        mFirebaseDatabaseRef.setValue(recipe);
-
-        Bundle params = new Bundle();
-        params.putString(FirebaseAnalytics.Param.ITEM_ID, recipe.getId());
-        mFirebaseAnalytics.logEvent("edit_recipe", params);
-
-        CharSequence text = "Recipe updated";
+        CharSequence text = "Loading...";
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(this, text, duration);
+        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
         toast.show();
 
-        finish();
+        mFirebaseDatabaseRef.setValue(recipe, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+                if (bitmapRecipe != null) {
+                    String key = databaseReference.getKey();
+                    StorageReference newImageRef = mFirebaseStorageRef.child(IMAGES_FOLDER).child(key);
+                    putImageInStorage(newImageRef, bitmapRecipe, key);
+                } else {
+                    CharSequence text = "Recipe updated";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                    toast.show();
+
+                    finish();
+                }
+
+                Bundle params = new Bundle();
+                params.putString(FirebaseAnalytics.Param.ITEM_ID, recipe.getId());
+                mFirebaseAnalytics.logEvent("edit_recipe", params);
+            }
+        });
 
     }
 

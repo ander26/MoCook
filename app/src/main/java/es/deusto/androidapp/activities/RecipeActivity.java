@@ -186,6 +186,9 @@ public class RecipeActivity extends AppCompatActivity {
                                 params.putString("recipe_name", recipe.getName());
                                 mFirebaseAnalytics.logEvent("delete_recipe", params);
                                 Toast.makeText(getBaseContext(),"Recipe deleted", Toast.LENGTH_SHORT).show();
+                                StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                                StorageReference imageRef = storageRef.child(CreateRecipeActivity.IMAGES_FOLDER).child(recipeID);
+                                imageRef.delete();
                                 finish();
                             }
                         });
