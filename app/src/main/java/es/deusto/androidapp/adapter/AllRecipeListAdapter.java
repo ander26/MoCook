@@ -3,6 +3,7 @@ package es.deusto.androidapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import es.deusto.androidapp.data.Recipe;
 
 public class AllRecipeListAdapter extends RecyclerView.Adapter <AllRecipeListAdapter.RecipeViewHolder> {
 
-    private final ArrayList<Recipe> recipes;
+    private ArrayList<Recipe> recipes;
 
     private final Context context;
     private final LayoutInflater mInflater;
@@ -45,7 +46,7 @@ public class AllRecipeListAdapter extends RecyclerView.Adapter <AllRecipeListAda
 
             int position = getLayoutPosition();
 
-            int recipeID = recipes.get(position).getId();
+            String recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
             intent.putExtra("recipe", recipeID);
@@ -91,5 +92,9 @@ public class AllRecipeListAdapter extends RecyclerView.Adapter <AllRecipeListAda
     @Override
     public int getItemCount() {
         return recipes.size();
+    }
+
+    public void setRecipes(ArrayList<Recipe> recipes) {
+        this.recipes = recipes;
     }
 }

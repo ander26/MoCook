@@ -2,34 +2,50 @@ package es.deusto.androidapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.activities.CreateRecipeActivity;
+import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.adapter.RecipeLikesListAdapter;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.RecipeLoaderTask;
 
 public class MyListFragment extends Fragment {
 
+    private static final String TAG = MyListFragment.class.getName();
+
     private final ArrayList<Recipe> recipesLiked = new ArrayList<>();
+    private Map<String, Recipe> mRecipesMap = new HashMap<>();
 
     private RecyclerView recyclerView;
     private FirebaseUser user;
     private RecipeLikesListAdapter mAdapter;
-    private ProgressBar progressBar;
     private TextView noRecipeText;
+
+    private DatabaseReference mRecipesRef;
+    private ChildEventListener mLikesChildEventListener;
 
     public MyListFragment() {
         // Required empty public constructor
@@ -49,15 +65,31 @@ public class MyListFragment extends Fragment {
         if (getArguments() != null) {
             user = getArguments().getParcelable("user");
         }
+
+        initFirebaseDatabaseReference();
+        initFirebaseDatabaseMessageRefListener();
     }
 
     @Override
     public void onResume() {
+        if (mLikesChildEventListener == null) {
+            recipesLiked.clear();
+            mRecipesMap.clear();
+            noRecipeText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            initFirebaseDatabaseReference();
+            initFirebaseDatabaseMessageRefListener();
+        }
         super.onResume();
-        recipesLiked.clear();
-        mAdapter.notifyDataSetChanged();
-        progressBar.setVisibility(View.VISIBLE);
-        new RecipeLoaderTask(getContext(), mAdapter, recipesLiked, user, progressBar, noRecipeText, recyclerView, 0).execute();
+    }
+
+    @Override
+    public void onPause() {
+        if (mLikesChildEventListener != null) {
+            mRecipesRef.removeEventListener(mLikesChildEventListener);
+            mLikesChildEventListener = null;
+        }
+        super.onPause();
     }
 
     @Override
@@ -76,9 +108,82 @@ public class MyListFragment extends Fragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        progressBar = view.findViewById(R.id.progress_bar);
-        
+        noRecipeText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
 
         return view;
+    }
+
+    private void initFirebaseDatabaseMessageRefListener() {
+
+        mRecipesRef = mRecipesRef.child(RecipeActivity.LIKES_CHILD).child(user.getUid());
+        mLikesChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot,
+                                     @Nullable String s) {
+                if (recipesLiked.size() == 0 ) {
+                    noRecipeText.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+
+                FirebaseDatabase.getInstance().getReference().
+                        child(CreateRecipeActivity.RECIPES_CHILD).child(dataSnapshot.getKey()).
+                        addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                        recipe.setId(dataSnapshot.getKey());
+                        mRecipesMap.put(dataSnapshot.getKey(), recipe);
+                        recipesLiked.add(recipe);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot,
+                                       @Nullable String s) {
+                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                if (mRecipesMap.containsKey(dataSnapshot.getKey())) {
+                    Recipe messageToRemove = mRecipesMap.get(dataSnapshot.getKey());
+                    recipesLiked.remove(messageToRemove);
+                    mRecipesMap.remove(messageToRemove);
+                    mAdapter.notifyDataSetChanged();
+                    if (recipesLiked.size() == 0) {
+                        noRecipeText.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                }
+            }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot,
+                                     @Nullable String s) { Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled:" + databaseError.getMessage()); }
+        };
+
+        mRecipesRef.addChildEventListener(mLikesChildEventListener);
+
+    }
+
+    private void initFirebaseDatabaseReference() {
+        recipesLiked.clear();
+        mRecipesMap.clear();
+        mRecipesRef = FirebaseDatabase.getInstance().getReference();
     }
 }

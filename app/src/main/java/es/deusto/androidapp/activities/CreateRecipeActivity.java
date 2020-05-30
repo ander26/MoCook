@@ -1,5 +1,6 @@
 package es.deusto.androidapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -31,19 +32,27 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.InputStream;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.SQLiteManager;
 import es.deusto.androidapp.manager.UserPropertyManager;
 
 public class CreateRecipeActivity extends AppCompatActivity {
+
+    public static final String RECIPES_CHILD = "recipes";
 
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
@@ -56,7 +65,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private Bitmap bitmapRecipe;
 
     private Recipe recipe;
-    private SQLiteManager sqlite;
 
     private TextView activityTitle;
     private AppCompatButton createButton;
@@ -67,6 +75,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
+
+    private DatabaseReference mFirebaseDatabaseRef;
+    private String recipeID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,18 +108,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         dropdown.setText(COUNTRIES[0], false);
 
-        sqlite = new SQLiteManager(this);
-
-        int recipeID = getIntent().getIntExtra("recipe", -1);
-
-        if (recipeID != -1) {
-            recipe = sqlite.retrieveRecipeID(recipeID).get(0);
-            editMode();
-        }
+        recipeID = getIntent().getStringExtra("recipe");
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mUserPropertyManager = UserPropertyManager.getInstance();
-        initFirebaseAuth ();
+
     }
 
     public void selectImage(View view) {
@@ -218,6 +222,16 @@ public class CreateRecipeActivity extends AppCompatActivity {
                     }
                     break;
             }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initFirebaseAuth ();
+        initFirebaseDatabaseReference();
+        if (recipeID != null) {
+            retrieveRecipe(recipeID);
         }
     }
 
@@ -334,7 +348,9 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String ingredients = inputIngredients.getEditText().getText().toString();
         String description = inputDescription.getEditText().getText().toString();
 
-        Recipe recipe = new Recipe(name, country, category, ingredients, description, mFirebaseUser.getUid(), bitmapRecipe);
+        //TODO: GUARDAR LA IMAGEN EN FIREBASE
+        Recipe recipe = new Recipe(name, country, category, ingredients, description, mFirebaseUser.getUid());
+
         Bundle params = new Bundle();
         params.putString("recipe_name", recipe.getName());
         params.putString("recipe_category", recipe.getCategory());
@@ -342,15 +358,31 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         mUserPropertyManager.registerUserAsCreator(this);
 
-        sqlite.storeRecipe(recipe);
+        //sqlite.storeRecipe(recipe);
 
-        CharSequence text = "Recipe created";
-        int duration = Toast.LENGTH_SHORT;
+        mFirebaseDatabaseRef.child(RECIPES_CHILD).push().setValue(recipe)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        CharSequence text = "Recipe created";
+                        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(this, text, duration);
-        toast.show();
+                        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                        toast.show();
 
-        finish();
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        CharSequence text = "Error creating the recipe";
+                        int duration = Toast.LENGTH_SHORT;
+
+                        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                        toast.show();
+                    }
+        });
+
 
     }
 
@@ -394,10 +426,12 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         recipe.setPicture(bitmapRecipe);
 
-        sqlite.updateRecipe(recipe);
+        recipe.setId(null);
+
+        mFirebaseDatabaseRef.setValue(recipe);
 
         Bundle params = new Bundle();
-        params.putString(FirebaseAnalytics.Param.ITEM_ID, Integer.toString(recipe.getId()));
+        params.putString(FirebaseAnalytics.Param.ITEM_ID, recipe.getId());
         mFirebaseAnalytics.logEvent("edit_recipe", params);
 
         CharSequence text = "Recipe updated";
@@ -424,5 +458,31 @@ public class CreateRecipeActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void initFirebaseDatabaseReference () {
+        mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
+    }
+
+    private void retrieveRecipe(final String recipeID) {
+        mFirebaseDatabaseRef = mFirebaseDatabaseRef.child(CreateRecipeActivity.RECIPES_CHILD).child(recipeID);
+
+        ValueEventListener mRecipeValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    recipe = dataSnapshot.getValue(Recipe.class);
+                    recipe.setId(recipeID);
+                    editMode();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        mFirebaseDatabaseRef.addListenerForSingleValueEvent(mRecipeValueEventListener);
     }
 }

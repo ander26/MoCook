@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class UserAccountFragment extends Fragment {
 
@@ -34,7 +32,6 @@ public class UserAccountFragment extends Fragment {
     private LinearLayout googleText;
     private LinearLayout editAccount;
 
-    private SQLiteManager sqlite;
     private FirebaseUser user;
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -54,7 +51,6 @@ public class UserAccountFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sqlite = new SQLiteManager(getContext());
         if (getArguments() != null) {
             user = getArguments().getParcelable("user");
         }

@@ -12,13 +12,13 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesListAdapter.RecipeLikesViewHolder> {
 
@@ -26,7 +26,6 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
     private final FirebaseUser user;
     private final Context context;
     private final LayoutInflater mInflater;
-    private SQLiteManager sqlite;
 
     private final TextView noRecipeText;
     private final RecyclerView recyclerView;
@@ -48,18 +47,9 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
                 @Override
                 public void onClick(View v) {
                     int position = getLayoutPosition();
-                    sqlite.deleteLike(user.getUid(), recipes.get(position).getId());
-                    recipes.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, recipes.size());
 
-                    if (recipes.size() == 0) {
-                        noRecipeText.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.GONE);
-                    } else {
-                        noRecipeText.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
+                    FirebaseDatabase.getInstance().getReference().child(RecipeActivity.LIKES_CHILD).
+                            child(user.getUid()).child(recipes.get(position).getId()).removeValue();
 
                 }
             });
@@ -71,7 +61,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
 
             int position = getLayoutPosition();
 
-            int recipeID = recipes.get(position).getId();
+            String recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
             intent.putExtra("user", user);
@@ -88,7 +78,6 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
         this.user = user;
         this.recyclerView = recyclerView;
         this.noRecipeText = noRecipeText;
-        sqlite = new SQLiteManager(context);
     }
 
     @Override

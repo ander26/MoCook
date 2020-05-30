@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import es.deusto.androidapp.R;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -30,8 +29,6 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputLayout inputEmail;
     private TextInputLayout inputPassword;
     private TextInputLayout inputVerifyPassword;
-
-    private SQLiteManager sqlite;
 
     private FirebaseAuth mAuth;
 
@@ -57,8 +54,6 @@ public class RegisterActivity extends AppCompatActivity {
         inputEmail = findViewById(R.id.email_input);
         inputPassword = findViewById(R.id.password_input);
         inputVerifyPassword = findViewById(R.id.verify_input);
-
-        sqlite = new SQLiteManager(this);
 
         // Create the notification channel.
         createNotificationChannel();
