@@ -1,13 +1,10 @@
 package es.deusto.androidapp.data;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-
-import java.io.ByteArrayOutputStream;
 
 public class Recipe implements Parcelable {
 
@@ -19,7 +16,7 @@ public class Recipe implements Parcelable {
     private String description;
     private String creator;
 
-    private Bitmap picture;
+    private String picture;
 
     public Recipe() {}
 
@@ -32,7 +29,7 @@ public class Recipe implements Parcelable {
         this.creator = creator;
     }
 
-    public Recipe(String name, String country, String category, String ingredients, String description, String creator, Bitmap picture) {
+    public Recipe(String name, String country, String category, String ingredients, String description, String creator, String picture) {
         this.name = name;
         this.country = country;
         this.category = category;
@@ -42,7 +39,7 @@ public class Recipe implements Parcelable {
         this.picture = picture;
     }
 
-    public Recipe(String id, String name, String country, String category, String ingredients, String description, String creator, byte [] picture) {
+    public Recipe(String id, String name, String country, String category, String ingredients, String description, String creator, String picture) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -50,10 +47,7 @@ public class Recipe implements Parcelable {
         this.ingredients = ingredients;
         this.description = description;
         this.creator = creator;
-        if (picture!= null) {
-            this.picture = BitmapFactory.decodeByteArray(picture, 0, picture.length);
-        }
-
+        this.picture = picture;
     }
 
     public String getId() {
@@ -112,18 +106,12 @@ public class Recipe implements Parcelable {
         this.creator = creator;
     }
 
-    public Bitmap getPicture() {
+    public String getPicture() {
         return picture;
     }
 
-    public void setPicture(Bitmap picture) {
+    public void setPicture(String picture) {
         this.picture = picture;
-    }
-
-    public byte[] pictureAsBytes() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        getPicture().compress(Bitmap.CompressFormat.PNG, 0, stream);
-        return stream.toByteArray();
     }
 
     @NonNull
@@ -147,7 +135,7 @@ public class Recipe implements Parcelable {
         ingredients = p.readString();
         description = p.readString();
         creator = p.readString();
-        picture = p.readParcelable(Bitmap.class.getClassLoader());
+        picture = p.readString();
     }
 
     @Override
@@ -164,7 +152,7 @@ public class Recipe implements Parcelable {
         dest.writeString(getIngredients());
         dest.writeString(getDescription());
         dest.writeString(getCreator());
-        dest.writeParcelable(getPicture(), flags);
+        dest.writeString(getPicture());
     }
 
     public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>(){

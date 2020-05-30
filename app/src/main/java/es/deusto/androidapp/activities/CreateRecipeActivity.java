@@ -1,6 +1,7 @@
 package es.deusto.androidapp.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -18,6 +19,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,8 +34,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +47,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import es.deusto.androidapp.R;
@@ -53,6 +62,10 @@ import es.deusto.androidapp.manager.UserPropertyManager;
 public class CreateRecipeActivity extends AppCompatActivity {
 
     public static final String RECIPES_CHILD = "recipes";
+    public static final String IMAGES_FOLDER = "images";
+    public static final String PICTURE_FIELD = "picture";
+
+    private static final String TAG = CreateRecipeActivity.class.getName();
 
     private ImageView recipeImage;
     private AutoCompleteTextView dropdown;
@@ -78,6 +91,8 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private DatabaseReference mFirebaseDatabaseRef;
     private String recipeID;
+
+    private StorageReference mFirebaseStorageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,6 +245,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         super.onStart();
         initFirebaseAuth ();
         initFirebaseDatabaseReference();
+        initFirebaseCloudStorage();
         if (recipeID != null) {
             retrieveRecipe(recipeID);
         }
@@ -348,7 +364,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String ingredients = inputIngredients.getEditText().getText().toString();
         String description = inputDescription.getEditText().getText().toString();
 
-        //TODO: GUARDAR LA IMAGEN EN FIREBASE
         Recipe recipe = new Recipe(name, country, category, ingredients, description, mFirebaseUser.getUid());
 
         Bundle params = new Bundle();
@@ -358,12 +373,21 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         mUserPropertyManager.registerUserAsCreator(this);
 
-        //sqlite.storeRecipe(recipe);
+        CharSequence text = "Loading...";
+        int duration = Toast.LENGTH_LONG;
 
-        mFirebaseDatabaseRef.child(RECIPES_CHILD).push().setValue(recipe)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
+        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+        toast.show();
+
+        mFirebaseDatabaseRef.child(RECIPES_CHILD).push().setValue(recipe, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    if (bitmapRecipe != null) {
+                        String key = databaseReference.getKey();
+                        StorageReference newImageRef = mFirebaseStorageRef.child(IMAGES_FOLDER).child(key);
+                        putImageInStorage(newImageRef, bitmapRecipe, key);
+                    } else {
                         CharSequence text = "Recipe created";
                         int duration = Toast.LENGTH_SHORT;
 
@@ -372,26 +396,84 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
                         finish();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        CharSequence text = "Error creating the recipe";
-                        int duration = Toast.LENGTH_SHORT;
+                } else {
+                    CharSequence text = "Error creating the recipe";
+                    int duration = Toast.LENGTH_SHORT;
 
-                        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
-                        toast.show();
-                    }
+                    Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                    toast.show();
+                }
+            }
         });
 
 
     }
 
-    private void editMode() {
+    private void putImageInStorage(final StorageReference newImageRef, Bitmap bitmap,
+                                   final String recipeKey) {
 
-        if (recipe.getPicture() != null) {
-            recipeImage.setImageBitmap(recipe.getPicture());
-            bitmapRecipe = recipe.getPicture();
-        }
+        Log.d(TAG, "Image uploading to " + newImageRef.toString());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        newImageRef.putBytes(data)
+                .addOnCompleteListener(this,
+                        new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull
+                                                           Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    mFirebaseDatabaseRef.child(RECIPES_CHILD)
+                                            .child(recipeKey)
+                                            .child(PICTURE_FIELD)
+                                            .setValue(newImageRef.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    CharSequence text = "Recipe created";
+                                                    int duration = Toast.LENGTH_SHORT;
+
+                                                    Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                                                    toast.show();
+
+                                                    finish();
+                                        }
+                                    });
+
+
+                                } else {
+                                    CharSequence text = "Error uploading the image";
+                                    int duration = Toast.LENGTH_SHORT;
+
+                                    Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                                    toast.show();
+                                    finish();
+                                }
+                            }
+                        })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                        double prog = (100.0 * taskSnapshot.getBytesTransferred())
+                                / taskSnapshot.getTotalByteCount();
+                        Log.i(TAG, "Upload is " + prog + "% done");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        CharSequence text = "Error uploading the image";
+                        int duration = Toast.LENGTH_LONG;
+
+                        Toast toast = Toast.makeText(CreateRecipeActivity.this, text, duration);
+                        toast.show();
+                        finish();;
+                    }
+                });
+    }
+
+    private void editMode() {
 
         inputName.getEditText().setText(recipe.getName());
         inputCountry.getEditText().setText(recipe.getCountry());
@@ -410,6 +492,31 @@ public class CreateRecipeActivity extends AppCompatActivity {
             }
         });
 
+        if (recipe.getPicture() != null) {
+            if (recipe.getPicture().startsWith("gs://") ||
+                    recipe.getPicture().startsWith("https://firebasestorage.googleapis.com/"))
+            {
+
+                StorageReference storageRef = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(recipe.getPicture());
+
+                storageRef.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+                                    Glide.with(recipeImage.getContext())
+                                            .load(downloadUrl)
+                                            .into(recipeImage);
+                                } else {
+                                    recipeImage.setImageDrawable(getDrawable(R.drawable.loader_background));
+                                }
+                            }
+                        });
+            }
+        }
+
     }
 
     private void updateRecipe() {
@@ -424,7 +531,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         recipe.setIngredients(inputIngredients.getEditText().getText().toString());
         recipe.setDescription(inputDescription.getEditText().getText().toString());
 
-        recipe.setPicture(bitmapRecipe);
+        //recipe.setPicture(bitmapRecipe);
 
         recipe.setId(null);
 
@@ -462,6 +569,10 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private void initFirebaseDatabaseReference () {
         mFirebaseDatabaseRef = FirebaseDatabase.getInstance().getReference();
+    }
+
+    private void initFirebaseCloudStorage () {
+        mFirebaseStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     private void retrieveRecipe(final String recipeID) {
