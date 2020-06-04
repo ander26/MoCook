@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private  static final int TIME_CHANGE = 3000;
 
+
     private ImageView logo;
 
     private LinearLayout textGroup;
@@ -52,10 +53,15 @@ public class MainActivity extends AppCompatActivity {
                 pairs[1] = new Pair <View, String>(textGroup, getString(R.string.transition_text));
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
+                intent.putExtra("message", getIntent().getExtras());
                 startActivity(intent, options.toBundle());
                 finish();
             }
         }, TIME_CHANGE);
+
+
     }
+
+
 
 }

@@ -50,12 +50,13 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/username_input_placeholder">
+                android:hint="@string/email_input_placeholder">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="textEmailAddress"
+                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,7 +82,7 @@
                 android:layout_marginTop="30dp"
                 android:background="@drawable/button_background"
                 android:onClick="login"
-                android:text="@string/log_in_button"
+                android:text="@string/sign_in"
                 android:textColor="@android:color/white" />
 
             <TextView
@@ -96,6 +97,26 @@
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/or"
+                android:textAlignment="center"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/google_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_marginTop="10dp"
+                app:buttonSize="wide"
+                app:colorScheme="dark"
+               />
 
         </LinearLayout>
 

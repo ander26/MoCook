@@ -1,17 +1,14 @@
 package es.deusto.androidapp.data;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.io.ByteArrayOutputStream;
-
 public class Recipe implements Parcelable {
 
-    private int id;
+    private String id;
     private String name;
     private String country;
     private String category;
@@ -19,9 +16,20 @@ public class Recipe implements Parcelable {
     private String description;
     private String creator;
 
-    private Bitmap picture;
+    private String picture;
 
-    public Recipe(String name, String country, String category, String ingredients, String description, String creator, Bitmap picture) {
+    public Recipe() {}
+
+    public Recipe(String name, String country, String category, String ingredients, String description, String creator) {
+        this.name = name;
+        this.country = country;
+        this.category = category;
+        this.ingredients = ingredients;
+        this.description = description;
+        this.creator = creator;
+    }
+
+    public Recipe(String name, String country, String category, String ingredients, String description, String creator, String picture) {
         this.name = name;
         this.country = country;
         this.category = category;
@@ -31,7 +39,7 @@ public class Recipe implements Parcelable {
         this.picture = picture;
     }
 
-    public Recipe(int id, String name, String country, String category, String ingredients, String description, String creator, byte [] picture) {
+    public Recipe(String id, String name, String country, String category, String ingredients, String description, String creator, String picture) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -39,17 +47,14 @@ public class Recipe implements Parcelable {
         this.ingredients = ingredients;
         this.description = description;
         this.creator = creator;
-        if (picture!= null) {
-            this.picture = BitmapFactory.decodeByteArray(picture, 0, picture.length);
-        }
-
+        this.picture = picture;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -101,18 +106,12 @@ public class Recipe implements Parcelable {
         this.creator = creator;
     }
 
-    public Bitmap getPicture() {
+    public String getPicture() {
         return picture;
     }
 
-    public void setPicture(Bitmap picture) {
+    public void setPicture(String picture) {
         this.picture = picture;
-    }
-
-    public byte[] pictureAsBytes() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        getPicture().compress(Bitmap.CompressFormat.PNG, 0, stream);
-        return stream.toByteArray();
     }
 
     @NonNull
@@ -129,14 +128,14 @@ public class Recipe implements Parcelable {
     }
 
     public Recipe (Parcel p){
-        id = p.readInt();
+        id = p.readString();
         name = p.readString();
         country = p.readString();
         category = p.readString();
         ingredients = p.readString();
         description = p.readString();
         creator = p.readString();
-        picture = p.readParcelable(Bitmap.class.getClassLoader());
+        picture = p.readString();
     }
 
     @Override
@@ -146,14 +145,14 @@ public class Recipe implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(getId());
+        dest.writeString(getId());
         dest.writeString(getName());
         dest.writeString(getCountry());
         dest.writeString(getCategory());
         dest.writeString(getIngredients());
         dest.writeString(getDescription());
         dest.writeString(getCreator());
-        dest.writeParcelable(getPicture(), flags);
+        dest.writeString(getPicture());
     }
 
     public static final Parcelable.Creator<Recipe> CREATOR = new Parcelable.Creator<Recipe>(){

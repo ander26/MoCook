@@ -9,14 +9,20 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.adapter.UserPagerAdapter;
-import es.deusto.androidapp.data.User;
 
 public class UserFragment extends Fragment {
 
@@ -24,14 +30,24 @@ public class UserFragment extends Fragment {
 
     private TextView userName;
 
-    private User user;
+    private FirebaseUser user;
 
-    public UserFragment() {
+    private CircleImageView civAvatar;
+
+    private ImageView closeSession;
+
+    private FirebaseAuth mFirebaseAuth;
+
+    private GoogleApiClient mGoogleApiClient;
+
+
+    public UserFragment(GoogleApiClient mGoogleApiClient) {
         // Required empty public constructor
+        this.mGoogleApiClient = mGoogleApiClient;
     }
 
-    public static UserFragment newInstance(User user) {
-        UserFragment fragment = new UserFragment();
+    public static UserFragment newInstance(FirebaseUser user, GoogleApiClient mGoogleApiClient) {
+        UserFragment fragment = new UserFragment(mGoogleApiClient);
         Bundle args = new Bundle();
         args.putParcelable("user", user);
         fragment.setArguments(args);
@@ -80,8 +96,28 @@ public class UserFragment extends Fragment {
         userName = view.findViewById(R.id.name_text);
         TextView usernameText = view.findViewById(R.id.username_text);
 
-        userName.setText(user.getFullName());
-        usernameText.setText("@" + user.getUsername());
+        userName.setText(user.getDisplayName());
+        usernameText.setText(user.getEmail());
+
+        civAvatar = view.findViewById(R.id.civ_avatar);
+
+        if (user.getPhotoUrl() != null ) {
+            civAvatar.setVisibility(View.VISIBLE);
+            Glide.with(civAvatar.getContext())
+                    .load(user.getPhotoUrl())
+                    .into(civAvatar);
+        }
+
+        closeSession = view.findViewById(R.id.close_session);
+
+        closeSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeSessionApp();
+            }
+        });
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         return view;
     }
@@ -89,6 +125,12 @@ public class UserFragment extends Fragment {
 
     public void changeName (String name) {
         userName.setText(name);
+    }
+
+    private void closeSessionApp() {
+        mFirebaseAuth.signOut();
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+        getActivity().finish();
     }
 
 }

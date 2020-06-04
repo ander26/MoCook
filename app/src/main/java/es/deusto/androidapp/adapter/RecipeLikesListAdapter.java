@@ -3,29 +3,36 @@ package es.deusto.androidapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 import es.deusto.androidapp.R;
 import es.deusto.androidapp.activities.RecipeActivity;
 import es.deusto.androidapp.data.Recipe;
-import es.deusto.androidapp.data.User;
-import es.deusto.androidapp.manager.SQLiteManager;
 
 public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesListAdapter.RecipeLikesViewHolder> {
 
     private final ArrayList<Recipe> recipes;
-    private final User user;
+    private final FirebaseUser user;
     private final Context context;
     private final LayoutInflater mInflater;
-    private SQLiteManager sqlite;
 
     private final TextView noRecipeText;
     private final RecyclerView recyclerView;
@@ -47,18 +54,9 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
                 @Override
                 public void onClick(View v) {
                     int position = getLayoutPosition();
-                    sqlite.deleteLike(user.getUsername(), recipes.get(position).getId());
-                    recipes.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, recipes.size());
 
-                    if (recipes.size() == 0) {
-                        noRecipeText.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.GONE);
-                    } else {
-                        noRecipeText.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
+                    FirebaseDatabase.getInstance().getReference().child(RecipeActivity.LIKES_CHILD).
+                            child(user.getUid()).child(recipes.get(position).getId()).removeValue();
 
                 }
             });
@@ -70,7 +68,7 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
 
             int position = getLayoutPosition();
 
-            int recipeID = recipes.get(position).getId();
+            String recipeID = recipes.get(position).getId();
 
             Intent intent = new Intent(context, RecipeActivity.class);
             intent.putExtra("user", user);
@@ -80,14 +78,13 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
         }
     }
 
-    public RecipeLikesListAdapter(Context context, User user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
+    public RecipeLikesListAdapter(Context context, FirebaseUser user, ArrayList<Recipe> recipes, RecyclerView recyclerView, TextView noRecipeText) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         this.recipes = recipes;
         this.user = user;
         this.recyclerView = recyclerView;
         this.noRecipeText = noRecipeText;
-        sqlite = new SQLiteManager(context);
     }
 
     @Override
@@ -100,19 +97,40 @@ public class RecipeLikesListAdapter extends RecyclerView.Adapter <RecipeLikesLis
     }
 
     @Override
-    public void onBindViewHolder(RecipeLikesViewHolder holder,
+    public void onBindViewHolder(final RecipeLikesViewHolder holder,
                                  int position) {
 
         // Retrieve the data for that position.
         String name = recipes.get(position).getName();
-        Bitmap image = recipes.get(position).getPicture();
+        String image = recipes.get(position).getPicture();
 
         // Add the data to the view holder.
         holder.recipeName.setText(name);
         if (image == null) {
             holder.recipeImage.setImageDrawable(context.getDrawable(R.drawable.loader_background));
         } else {
-            holder.recipeImage.setImageBitmap(image);
+            if (image.startsWith("gs://") ||
+                    image.startsWith("https://firebasestorage.googleapis.com/"))
+            {
+
+                StorageReference storageRef = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(image);
+
+                storageRef.getDownloadUrl().addOnCompleteListener(
+                        new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    String downloadUrl = task.getResult().toString();
+                                    Glide.with(holder.recipeImage.getContext())
+                                            .load(downloadUrl)
+                                            .into(holder.recipeImage);
+                                } else {
+                                    holder.recipeImage.setImageDrawable(context.getDrawable(R.drawable.loader_background));
+                                }
+                            }
+                        });
+            }
         }
     }
 
