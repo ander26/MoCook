@@ -1,13 +1,19 @@
 package es.deusto.androidapp.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -26,8 +32,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import es.deusto.androidapp.R;
+import es.deusto.androidapp.services.FCMService;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = LoginActivity.class.getName();
 
     private TextInputLayout inputUsername;
     private TextInputLayout inputPassword;
@@ -62,6 +71,13 @@ public class LoginActivity extends AppCompatActivity {
         configureGoogleSignInAndCreateClient();
 
         initFirebaseAuth ();
+
+        FCMService.printToken(this);
+
+        if (getIntent().getBundleExtra("message") != null) {
+            checkFCMMessage(getIntent().getBundleExtra("message"));
+        }
+
 
     }
 
@@ -215,6 +231,34 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void checkFCMMessage (Bundle fcmmessageData) {
+        if (fcmmessageData != null) {
+            String title = fcmmessageData.getString(FCMService.MSG_DATA_KEY_TITLE);
+            String description = fcmmessageData.getString(FCMService.MSG_DATA_KEY_DESC);
+            String recipe = fcmmessageData.getString(FCMService.MSG_DATA_KEY_RECIPE);
+
+            Log.d (TAG, "checkFCMMessage: Title = " + title);
+            Log.d (TAG, "checkFCMMessage: Description = " + description);
+            Log.d (TAG, "checkFCMMessage: Recipe = " + recipe);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(title);
+            builder.setMessage(Html.fromHtml(description + "<br/> <br/> " + "<b>"+"New recipe: "+"</b>" + recipe));
+
+            builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+
+
+            builder.show();
+
+        }
     }
 
 }
